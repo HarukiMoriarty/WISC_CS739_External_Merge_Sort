@@ -9,9 +9,9 @@ class Row
 public:
 	Row();
 	virtual ~Row();
-	void setData();
-	void setOffset(Row& other);
-	bool compare(Row& other);
+	void setData(size_t range);
+	void setOffset(const Row& other);
+	bool operator<(const Row& other) const;
 private:
 	size_t data[5];
 	size_t offset[2];
