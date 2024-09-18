@@ -16,15 +16,15 @@ Row::~Row()
 	TRACE(true);
 } // Row::~Row
 
-void Row::setData()
+void Row::setData(size_t range)
 {
 	TRACE(true);
 	for (auto& item : data) {
-		item = Random(SIZE_MAX);
+		item = Random(range);
 	}
 } // Row::setData
 
-void Row::setOffset(Row& other)
+void Row::setOffset(const Row& other)
 {
 	TRACE(true);
 
@@ -43,8 +43,9 @@ void Row::setOffset(Row& other)
 	offset[1] = 0;
 } // Row::setOffset
 
-bool Row::compare(Row& other) {
-	// Compare the OVC first, element by element
+bool Row::operator<(const Row& other) const
+{
+	// First compare the offset arrays element by element
 	for (size_t i = 0; i < 3; ++i)
 	{
 		if (offset[i] < other.offset[i])
@@ -57,7 +58,7 @@ bool Row::compare(Row& other) {
 		}
 	}
 
-	// If the OVC are equal, compare the data
+	// If the offset arrays are equal, compare the data arrays
 	for (size_t i = 0; i < 5; ++i)
 	{
 		if (data[i] < other.data[i])
@@ -68,11 +69,12 @@ bool Row::compare(Row& other) {
 		{
 			return false;
 		}
+		// If equal, continue to the next element
 	}
 
-	// If both offset and data arrays are equal, return whatever
-	return true;
-}
+	// If both offset and data arrays are equal, return false (this is not less than the other)
+	return false;
+} // Row::operator<
 
 Plan::Plan(char const* const name)
 	: _name(name)
