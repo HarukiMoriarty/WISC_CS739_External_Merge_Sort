@@ -9,9 +9,12 @@ class Row
 public:
 	Row();
 	virtual ~Row();
-	// ...
+	void setData();
+	void setOffset(Row& other);
+	bool compare(Row& other);
 private:
-	// ...
+	size_t data[5];
+	size_t offset[2];
 }; // class Row
 
 class Plan

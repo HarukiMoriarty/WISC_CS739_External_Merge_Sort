@@ -1,6 +1,6 @@
 Trace existing code
 Disable (not remove!) excessive tracing output
-Define class for data records
+Define class for data records | done
 Add data records (incl mem mgmt) to iterators
 Add data generation (random values) in ScanIterator
 Test with simple plan -- scan only
