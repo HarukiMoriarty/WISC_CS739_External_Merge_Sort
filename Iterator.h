@@ -12,8 +12,11 @@ public:
 	void setData(size_t range);
 	void setOffset(const Row& other);
 	bool operator<(const Row& other) const;
+
+	// below are format function
+	void printRow() const;
 private:
-	size_t data[5];
+	size_t data[ROW_LENTH];
 	size_t offset[2];
 }; // class Row
 

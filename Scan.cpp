@@ -38,6 +38,8 @@ bool ScanIterator::next(Row& row)
 	if (_count >= _plan->_count)
 		return false;
 
+	row.setData(VALUE_RANGE);
+	row.printRow();
 	++_count;
 	return true;
 } // ScanIterator::next

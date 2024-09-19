@@ -134,3 +134,7 @@ size_t msb(size_t const x);
 int msbi(size_t const x);
 char const* YesNo(bool const b);
 char const* OkBad(bool const b);
+
+// Following are experiment config
+#define ROW_LENTH 10
+#define VALUE_RANGE 1000

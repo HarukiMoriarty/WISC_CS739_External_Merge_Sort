@@ -28,11 +28,11 @@ void Row::setOffset(const Row& other)
 {
 	TRACE(true);
 
-	for (size_t i = 0; i < 5; ++i)
+	for (size_t i = 0; i < ROW_LENTH; ++i)
 	{
 		if (data[i] != other.data[i])
 		{
-			offset[0] = 5 - i;
+			offset[0] = ROW_LENTH - i;
 			offset[1] = data[i];
 			return;
 		}
@@ -46,7 +46,7 @@ void Row::setOffset(const Row& other)
 bool Row::operator<(const Row& other) const
 {
 	// First compare the offset arrays element by element
-	for (size_t i = 0; i < 3; ++i)
+	for (size_t i = 0; i < 2; ++i)
 	{
 		if (offset[i] < other.offset[i])
 		{
@@ -59,7 +59,7 @@ bool Row::operator<(const Row& other) const
 	}
 
 	// If the offset arrays are equal, compare the data arrays
-	for (size_t i = 0; i < 5; ++i)
+	for (size_t i = 0; i < ROW_LENTH; ++i)
 	{
 		if (data[i] < other.data[i])
 		{
@@ -75,6 +75,22 @@ bool Row::operator<(const Row& other) const
 	// If both offset and data arrays are equal, return false (this is not less than the other)
 	return false;
 } // Row::operator<
+
+void Row::printRow() const
+{
+	printf("Row data: ");
+	for (size_t i = 0; i < ROW_LENTH; ++i)
+	{
+		printf("%zu ", data[i]);
+	}
+
+	printf(" Row offset: ");
+	for (size_t i = 0; i < 2; ++i)
+	{
+		printf("%zu ", offset[i]);
+	}
+	printf("\n");
+}
 
 Plan::Plan(char const* const name)
 	: _name(name)
