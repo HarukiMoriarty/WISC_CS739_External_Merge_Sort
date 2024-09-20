@@ -5,9 +5,9 @@ Add data records (incl mem mgmt) to iterators | should done for sort, (no need f
 Add data generation (random values) in ScanIterator | done
 Test with simple plan -- scan only | done
 Add predicate evaluation to FilterIterator | done
-Add parity (xor) logic to WitnessIterator, as well as comparisons (what parity logic? what comparisons ?)
+Add parity (xor) logic to WitnessIterator, as well as comparisons | done
 Test with moderate plan -- scan & filter | done
-Add in-memory sorting -- eg 10, 100, 1000 rows
+Add in-memory sorting -- eg 10, 100, 1000 rows | done
 Test with moderate plan -- scan & sort ( & witnesses! )
 Test with 0 rows and with 1 row, also 2, 3, 7 rows
 Add Plan & Iterator that verify a set of rows

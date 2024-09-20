@@ -13,6 +13,7 @@ public:
 	size_t getData(size_t index) const;
 	void setOffset(const Row& other);
 	bool operator<(const Row& other) const;
+	bool operator<=(const Row& other) const;
 
 	// below are format function
 	void printRow() const;

@@ -9,15 +9,15 @@ int main(int argc, char* argv[])
 	TRACE(false);
 
 	std::vector<Predicate> predicates;
-	predicates.emplace_back(0, 100);
-	predicates.emplace_back(2, 500);
+	predicates.emplace_back(0, 1000);
+	predicates.emplace_back(2, 5000);
 
 	Plan* const plan =
 		new WitnessPlan("output",
 			new SortPlan("*** The main thing! ***",
 				new WitnessPlan("input",
 					new FilterPlan("half",
-						new ScanPlan("source", 1000), predicates
+						new ScanPlan("source", 10), predicates
 					)
 				)
 			)

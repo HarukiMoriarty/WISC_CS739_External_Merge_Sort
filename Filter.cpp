@@ -3,18 +3,18 @@
 FilterPlan::FilterPlan(char const* const name, Plan* const input, std::vector<Predicate> predicates)
 	: Plan(name), _input(input), _predicates(predicates)
 {
-	TRACE(true);
+	TRACE(false);
 } // FilterPlan::FilterPlan
 
 FilterPlan::~FilterPlan()
 {
-	TRACE(true);
+	TRACE(false);
 	delete _input;
 } // FilterPlan::~FilterPlan
 
 Iterator* FilterPlan::init() const
 {
-	TRACE(true);
+	TRACE(false);
 	return new FilterIterator(this);
 } // FilterPlan::init
 
@@ -22,12 +22,12 @@ FilterIterator::FilterIterator(FilterPlan const* const plan) :
 	_plan(plan), _input(plan->_input->init()),
 	_consumed(0), _produced(0)
 {
-	TRACE(true);
+	TRACE(false);
 } // FilterIterator::FilterIterator
 
 FilterIterator::~FilterIterator()
 {
-	TRACE(true);
+	TRACE(false);
 	delete _input;
 
 	traceprintf("produced %lu of %lu rows\n", (unsigned long)(_produced), (unsigned long)(_consumed));
@@ -35,7 +35,7 @@ FilterIterator::~FilterIterator()
 
 bool FilterIterator::next(Row& row)
 {
-	TRACE(true);
+	TRACE(false);
 
 	for (;;)
 	{
@@ -59,6 +59,6 @@ bool FilterIterator::next(Row& row)
 
 void FilterIterator::free(Row& row)
 {
-	TRACE(true);
+	TRACE(false);
 	_input->free(row);
 } // FilterIterator::free
