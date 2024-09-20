@@ -1,5 +1,9 @@
 #include "Iterator.h"
 
+// Helper function
+int partition(std::vector<Row*>& rows, int low, int high);
+void quickSort(std::vector<Row*>& rows, int low, int high);
+
 class SortPlan : public Plan
 {
 	friend class SortIterator;
@@ -18,8 +22,10 @@ public:
 	~SortIterator();
 	bool next(Row& row);
 	void free(Row& row);
+	void internalSort();
 private:
 	SortPlan const* const _plan;
 	Iterator* const _input;
 	RowCount _consumed, _produced;
+	std::vector<Row*> _data;
 }; // class SortIterator

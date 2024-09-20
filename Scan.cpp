@@ -3,29 +3,29 @@
 ScanPlan::ScanPlan(char const* const name, RowCount const count)
 	: Plan(name), _count(count)
 {
-	TRACE(true);
+	TRACE(false);
 } // ScanPlan::ScanPlan
 
 ScanPlan::~ScanPlan()
 {
-	TRACE(true);
+	TRACE(false);
 } // ScanPlan::~ScanPlan
 
 Iterator* ScanPlan::init() const
 {
-	TRACE(true);
+	TRACE(false);
 	return new ScanIterator(this);
 } // ScanPlan::init
 
 ScanIterator::ScanIterator(ScanPlan const* const plan) :
 	_plan(plan), _count(0)
 {
-	TRACE(true);
+	TRACE(false);
 } // ScanIterator::ScanIterator
 
 ScanIterator::~ScanIterator()
 {
-	TRACE(true);
+	TRACE(false);
 	traceprintf("produced %lu of %lu rows\n",
 		(unsigned long)(_count),
 		(unsigned long)(_plan->_count));
@@ -33,7 +33,7 @@ ScanIterator::~ScanIterator()
 
 bool ScanIterator::next(Row& row)
 {
-	TRACE(true);
+	TRACE(false);
 
 	if (_count >= _plan->_count)
 		return false;
@@ -46,5 +46,5 @@ bool ScanIterator::next(Row& row)
 
 void ScanIterator::free(Row& row)
 {
-	TRACE(true);
+	TRACE(false);
 } // ScanIterator::free

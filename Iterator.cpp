@@ -2,7 +2,7 @@
 
 Row::Row()
 {
-	TRACE(true);
+	TRACE(false);
 	for (auto& item : data) {
 		item = 0;
 	}
@@ -13,12 +13,12 @@ Row::Row()
 
 Row::~Row()
 {
-	TRACE(true);
+	TRACE(false);
 } // Row::~Row
 
 void Row::initData(size_t range)
 {
-	TRACE(true);
+	TRACE(false);
 	for (auto& item : data) {
 		item = Random(range);
 	}
@@ -32,7 +32,7 @@ size_t Row::getData(size_t index) const
 
 void Row::setOffset(const Row& other)
 {
-	TRACE(true);
+	TRACE(false);
 
 	for (size_t i = 0; i < ROW_LENTH; ++i)
 	{
@@ -82,6 +82,21 @@ bool Row::operator<(const Row& other) const
 	return false;
 } // Row::operator<
 
+bool Row::operator<=(const Row& other) const
+{
+	for (size_t i = 0; i < ROW_LENTH; ++i)
+	{
+		if (data[i] < other.data[i]) {
+			return true;
+		}
+		else if (data[i] > other.data[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+// Row::operator>=
+
 void Row::printRow() const
 {
 	printf("Row data: ");
@@ -101,27 +116,27 @@ void Row::printRow() const
 Plan::Plan(char const* const name)
 	: _name(name)
 {
-	TRACE(true);
+	TRACE(false);
 } // Plan::Plan
 
 Plan::~Plan()
 {
-	TRACE(true);
+	TRACE(false);
 } // Plan::~Plan
 
 Iterator::Iterator() : _rows(0)
 {
-	TRACE(true);
+	TRACE(false);
 } // Iterator::Iterator
 
 Iterator::~Iterator()
 {
-	TRACE(true);
+	TRACE(false);
 } // Iterator::~Iterator
 
 void Iterator::run()
 {
-	TRACE(true);
+	TRACE(false);
 
 	for (Row row; next(row); free(row))
 		++_rows;

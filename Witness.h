@@ -18,8 +18,18 @@ public:
 	~WitnessIterator();
 	bool next(Row& row);
 	void free(Row& row);
+
+	// functions used for checking correctness
+	void calParity(Row& row);
+	void printParity();
+	void checkOrder(Row& row);
 private:
 	WitnessPlan const* const _plan;
 	Iterator* const _input;
 	RowCount _rows;
+
+	// variables used for checking correctness
+	size_t _parity[ROW_LENTH];
+	bool in_order;
+	Row last_row;
 }; // class WitnessIterator

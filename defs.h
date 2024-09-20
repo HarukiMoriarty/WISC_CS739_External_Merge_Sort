@@ -140,5 +140,5 @@ char const* OkBad(bool const b);
 // Following are experiment config
 #define ROW_LENTH 10
 #define VALUE_RANGE 1000
-#define NUM_ROW_PER_PAGE 400
-#define MEMORY_CAPACIY_IN_PAGE 100 // For now we treat this same as fan-in
+#define CACHE_CAPACITY 10
+#define MEMORY_CAPACIY 100 // For now we treat this same as fan-in
