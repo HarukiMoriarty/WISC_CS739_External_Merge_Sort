@@ -1,7 +1,7 @@
 #include "Filter.h"
 
-FilterPlan::FilterPlan(char const* const name, Plan* const input)
-	: Plan(name), _input(input)
+FilterPlan::FilterPlan(char const* const name, Plan* const input, std::vector<Predicate> predicates)
+	: Plan(name), _input(input), _predicates(predicates)
 {
 	TRACE(true);
 } // FilterPlan::FilterPlan
@@ -28,12 +28,9 @@ FilterIterator::FilterIterator(FilterPlan const* const plan) :
 FilterIterator::~FilterIterator()
 {
 	TRACE(true);
-
 	delete _input;
 
-	traceprintf("produced %lu of %lu rows\n",
-		(unsigned long)(_produced),
-		(unsigned long)(_consumed));
+	traceprintf("produced %lu of %lu rows\n", (unsigned long)(_produced), (unsigned long)(_consumed));
 } // FilterIterator::~FilterIterator
 
 bool FilterIterator::next(Row& row)
@@ -43,16 +40,21 @@ bool FilterIterator::next(Row& row)
 	for (;;)
 	{
 		if (!_input->next(row))  return false;
-
 		++_consumed;
-		if (_consumed % 2 != 0) // the fake filter predicate
-			break;
+		bool passed_all_predicates = true;
+		for (const auto& predicate : _plan->_predicates) {
+			if (row.getData(predicate._index) > predicate._value) {
+				passed_all_predicates = false;
+				_input->free(row);
+				break;
+			}
+		}
 
-		_input->free(row);
+		if (passed_all_predicates) {
+			++_produced;
+			return true;
+		}
 	}
-
-	++_produced;
-	return true;
 } // FilterIterator::next
 
 void FilterIterator::free(Row& row)

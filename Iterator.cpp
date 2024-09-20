@@ -16,13 +16,19 @@ Row::~Row()
 	TRACE(true);
 } // Row::~Row
 
-void Row::setData(size_t range)
+void Row::initData(size_t range)
 {
 	TRACE(true);
 	for (auto& item : data) {
 		item = Random(range);
 	}
 } // Row::setData
+
+size_t Row::getData(size_t index) const
+{
+	assert(index < ROW_LENTH);
+	return data[index];
+} // Row::getData
 
 void Row::setOffset(const Row& other)
 {

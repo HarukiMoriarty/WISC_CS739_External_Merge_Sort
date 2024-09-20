@@ -1,12 +1,12 @@
 Trace existing code
 Disable (not remove!) excessive tracing output
 Define class for data records | done
-Add data records (incl mem mgmt) to iterators
-Add data generation (random values) in ScanIterator
-Test with simple plan -- scan only
-Add predicate evaluation to FilterIterator
-Add parity (xor) logic to WitnessIterator, as well as comparisons
-Test with moderate plan -- scan & filter
+Add data records (incl mem mgmt) to iterators | should done for sort, (no need for scan, filter, witness)
+Add data generation (random values) in ScanIterator | done
+Test with simple plan -- scan only | done
+Add predicate evaluation to FilterIterator | done
+Add parity (xor) logic to WitnessIterator, as well as comparisons (what parity logic? what comparisons ?)
+Test with moderate plan -- scan & filter | done
 Add in-memory sorting -- eg 10, 100, 1000 rows
 Test with moderate plan -- scan & sort ( & witnesses! )
 Test with 0 rows and with 1 row, also 2, 3, 7 rows
