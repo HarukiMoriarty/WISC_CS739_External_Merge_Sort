@@ -41,6 +41,8 @@ bool FilterIterator::next(Row& row)
 	{
 		if (!_input->next(row))  return false;
 		++_consumed;
+
+		// Iterate over each predicate defined in the plan and check if the row meets the conditions.
 		bool passed_all_predicates = true;
 		for (const auto& predicate : _plan->_predicates) {
 			if (row.getData(predicate._index) > predicate._value) {

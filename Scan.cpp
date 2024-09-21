@@ -35,10 +35,9 @@ bool ScanIterator::next(Row& row)
 {
 	TRACE(false);
 
-	if (_count >= _plan->_count)
-		return false;
+	if (_count >= _plan->_count) return false;
 
-	row.initData(VALUE_RANGE);
+	row.initData(VALUE_RANGE);					// Initialize row data.
 	// row.printRow();
 	++_count;
 	return true;

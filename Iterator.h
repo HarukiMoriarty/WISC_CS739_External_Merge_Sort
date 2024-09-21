@@ -9,17 +9,43 @@ class Row
 public:
 	Row();
 	virtual ~Row();
+
+	/**
+	 * @brief Initializes the data array with random values based on the input range.
+	 * @param range The maximum value for generating random data in the array.
+	 */
 	void initData(size_t range);
+
+	/**
+	 * @brief Retrieves the data at the specified index.
+	 * @param index The index of the data array to access.
+	 * @return The value at the specified index in the data array.
+	 */
 	size_t getData(size_t index) const;
+
+	/**
+	 * @brief Sets OVC based on the values of another Row object.
+	 * @param other Another Row object from which to calculate the offset values.
+	 */
 	void setOffset(const Row& other);
-	bool operator<(const Row& other) const;
+
+	/**
+	 * @brief Overloading operator <=, notice used for OVC comparation.
+	 */
 	bool operator<=(const Row& other) const;
 
-	// below are format function
+	/**
+	 * @brief Overloading operator >=, notice used for data comparation.
+	 */
+	bool operator>=(const Row& other) const;
+
+	/**
+	 * @brief Prints the contents of the Row (both data and offset arrays).
+	 */
 	void printRow() const;
 private:
-	size_t data[ROW_LENTH];
-	size_t offset[2];
+	size_t data[ROW_LENTH];	// Array to store the data.
+	size_t offset[2];		// Array to store the OVC.
 }; // class Row
 
 class Plan

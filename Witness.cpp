@@ -77,7 +77,7 @@ void WitnessIterator::checkOrder(Row& row)
 {
 	if (in_order)
 	{
-		if (last_row <= row)
+		if (row >= last_row)
 		{
 			last_row = row;
 			return;

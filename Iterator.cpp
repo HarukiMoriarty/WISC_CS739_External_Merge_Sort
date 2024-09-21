@@ -44,14 +44,14 @@ void Row::setOffset(const Row& other)
 		}
 	}
 
-	// Remember to set OVC to 0 if equal
+	// Need to set OVC to 0 if equal.
 	offset[0] = 0;
 	offset[1] = 0;
 } // Row::setOffset
 
-bool Row::operator<(const Row& other) const
+bool Row::operator<=(const Row& other) const
 {
-	// First compare the offset arrays element by element
+	// First compare the offset arrays element by element.
 	for (size_t i = 0; i < 2; ++i)
 	{
 		if (offset[i] < other.offset[i])
@@ -64,7 +64,7 @@ bool Row::operator<(const Row& other) const
 		}
 	}
 
-	// If the offset arrays are equal, compare the data arrays
+	// If the offset arrays are equal, then compare the data arrays element by element.
 	for (size_t i = 0; i < ROW_LENTH; ++i)
 	{
 		if (data[i] < other.data[i])
@@ -75,21 +75,21 @@ bool Row::operator<(const Row& other) const
 		{
 			return false;
 		}
-		// If equal, continue to the next element
 	}
 
-	// If both offset and data arrays are equal, return false (this is not less than the other)
-	return false;
+	// If both offset and data arrays are equal, return true.
+	return true;
 } // Row::operator<
 
-bool Row::operator<=(const Row& other) const
+bool Row::operator>=(const Row& other) const
 {
+	// Compare the data arrays element by element.
 	for (size_t i = 0; i < ROW_LENTH; ++i)
 	{
-		if (data[i] < other.data[i]) {
+		if (data[i] > other.data[i]) {
 			return true;
 		}
-		else if (data[i] > other.data[i]) {
+		else if (data[i] < other.data[i]) {
 			return false;
 		}
 	}
@@ -104,7 +104,6 @@ void Row::printRow() const
 	{
 		printf("%zu ", data[i]);
 	}
-
 	printf(" Row offset: ");
 	for (size_t i = 0; i < 2; ++i)
 	{
@@ -138,9 +137,7 @@ void Iterator::run()
 {
 	TRACE(false);
 
-	for (Row row; next(row); free(row))
-		++_rows;
+	for (Row row; next(row); free(row)) ++_rows;
 
-	traceprintf("entire plan produced %lu rows\n",
-		(unsigned long)_rows);
+	traceprintf("entire plan produced %lu rows\n", (unsigned long)_rows);
 } // Iterator::run
