@@ -19,17 +19,28 @@ public:
 	bool next(Row& row);
 	void free(Row& row);
 
-	// functions used for checking correctness
+	/**
+	 * @brief Calculates and updates the parity for the provided row.
+	 * @param row Reference to the Row object for which to calculate parity.
+	 */
 	void calParity(Row& row);
+
+	/**
+	 * @brief Prints the current parity values for verification.
+	 */
 	void printParity();
+
+	/**
+	 * @brief Checks if the current row is in the correct order compared to the last row.
+	 * @param row Reference to the current Row object to be checked.
+	 */
 	void checkOrder(Row& row);
 private:
 	WitnessPlan const* const _plan;
 	Iterator* const _input;
 	RowCount _rows;
 
-	// variables used for checking correctness
-	size_t _parity[ROW_LENTH];
-	bool in_order;
-	Row last_row;
+	size_t _parity[ROW_LENTH]; 	// Array to store the calculated parity values.
+	bool in_order;				// Flag indicating if rows are being sorted.	
+	Row last_row;				// Stores the last row to verify the order.
 }; // class WitnessIterator

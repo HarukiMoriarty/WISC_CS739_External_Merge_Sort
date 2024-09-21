@@ -1,13 +1,13 @@
 #include "Sort.h"
 
-// Helper function
+// Internal Sort Helper function
 int partition(std::vector<Row*>& rows, int low, int high)
 {
 	Row* pivot = rows[high];
 	int i = low - 1;
 
 	for (int j = low; j < high; ++j) {
-		if (*rows[j] <= *pivot) {
+		if (*pivot >= *rows[j]) {
 			++i;
 			std::swap(rows[i], rows[j]);
 		}
@@ -50,21 +50,19 @@ SortIterator::SortIterator(SortPlan const* const plan) :
 {
 	TRACE(false);
 
+	// Collect data during initialization.
 	for (Row row; _input->next(row); _input->free(row))
 	{
 		++_consumed;
 		Row* newRow = new Row(row);
 		_data.push_back(newRow);
 	}
-
-	// It might looks like we perform all sort things here and keep it in some array
 	delete _input;
 
+	// TODO: It might looks like we perform all sort things here and keep it in some array.
 	internalSort();
 
-	traceprintf("%s consumed %lu rows\n",
-		_plan->_name,
-		(unsigned long)(_consumed));
+	traceprintf("%s consumed %lu rows\n", _plan->_name, (unsigned long)(_consumed));
 } // SortIterator::SortIterator
 
 SortIterator::~SortIterator()
@@ -76,17 +74,14 @@ SortIterator::~SortIterator()
 		delete row;
 	}
 
-	traceprintf("%s produced %lu of %lu rows\n",
-		_plan->_name,
-		(unsigned long)(_produced),
-		(unsigned long)(_consumed));
+	traceprintf("%s produced %lu of %lu rows\n", _plan->_name, (unsigned long)(_produced), (unsigned long)(_consumed));
 } // SortIterator::~SortIterator
 
 bool SortIterator::next(Row& row)
 {
 	TRACE(false);
 
-	if (_produced >= _consumed)  return false;
+	if (_produced >= _consumed) return false;
 	row = *_data[_produced];
 	++_produced;
 	return true;
