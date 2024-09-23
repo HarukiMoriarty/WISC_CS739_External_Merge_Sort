@@ -46,7 +46,7 @@ Iterator* SortPlan::init() const
 
 SortIterator::SortIterator(SortPlan const* const plan) :
 	_plan(plan), _input(plan->_input->init()),
-	_consumed(0), _produced(0)
+	_consumed(0), _produced(0), _runIndex(0)
 {
 	TRACE(false);
 
@@ -55,13 +55,25 @@ SortIterator::SortIterator(SortPlan const* const plan) :
 	{
 		++_consumed;
 		Row* newRow = new Row(row);
-		_data.push_back(newRow);
+		_memory.push_back(newRow);
+
+		if (_memory.size() >= MEMORY_CAPACIY)
+		{
+			internalSort();
+			writeRunToDisk();
+			clearMemory();
+		}
+	}
+
+	if (!_memory.empty())
+	{
+		internalSort();
+		writeRunToDisk();
+		clearMemory();
 	}
 	delete _input;
 
-	// TODO: It might looks like we perform all sort things here and keep it in some array.
-	internalSort();
-
+	_output.open("disk/output");
 	traceprintf("%s consumed %lu rows\n", _plan->_name, (unsigned long)(_consumed));
 } // SortIterator::SortIterator
 
@@ -69,10 +81,11 @@ SortIterator::~SortIterator()
 {
 	TRACE(false);
 
-	for (Row* row : _data)
+	for (Row* row : _memory)
 	{
 		delete row;
 	}
+	_output.close();
 
 	traceprintf("%s produced %lu of %lu rows\n", _plan->_name, (unsigned long)(_produced), (unsigned long)(_consumed));
 } // SortIterator::~SortIterator
@@ -81,8 +94,9 @@ bool SortIterator::next(Row& row)
 {
 	TRACE(false);
 
-	if (_produced >= _consumed) return false;
-	row = *_data[_produced];
+	// Notice now we do not do external sort, so we just copy run_1 here for debugging.
+	if (_produced >= 100) return false;
+	assert(row.readFromDisk(_output));
 	++_produced;
 	return true;
 } // SortIterator::next
@@ -94,8 +108,31 @@ void SortIterator::free(Row& row)
 
 void SortIterator::internalSort()
 {
-	if (!_data.empty())
+	if (!_memory.empty())
 	{
-		quickSort(_data, 0, _consumed - 1);
+		quickSort(_memory, 0, _memory.size() - 1);
 	}
+}
+
+void SortIterator::writeRunToDisk()
+{
+	std::ofstream file("disk/run_" + std::to_string(_runIndex));
+	if (file.is_open()) {
+		for (const Row* row : _memory) {
+			row->writeToDisk(file);  // Replace this with actual Row serialization logic
+		}
+		file.close();
+		_runIndex++;
+	}
+	else {
+		printf("Error: Unable to open file run_%ld\n", _runIndex);
+	}
+}
+
+void SortIterator::clearMemory()
+{
+	for (Row* row : _memory) {
+		delete row;
+	}
+	_memory.clear();
 }
