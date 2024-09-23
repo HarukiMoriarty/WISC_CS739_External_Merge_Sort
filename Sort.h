@@ -23,9 +23,15 @@ public:
 	bool next(Row& row);
 	void free(Row& row);
 	void internalSort();
+	void writeRunToDisk();
+	void clearMemory();
 private:
 	SortPlan const* const _plan;
 	Iterator* const _input;
 	RowCount _consumed, _produced;
-	std::vector<Row*> _data;
+
+	size_t _runIndex;
+	std::vector<Row*> _memory;
+
+	std::ifstream _output;
 }; // class SortIterator

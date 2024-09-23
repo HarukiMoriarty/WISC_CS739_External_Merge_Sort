@@ -112,6 +112,25 @@ void Row::printRow() const
 	printf("\n");
 }
 
+void Row::writeToDisk(std::ofstream& file) const
+{
+	for (size_t val : data)
+	{
+		file << val << " ";
+	}
+	file << "\n";
+}
+
+bool Row::readFromDisk(std::ifstream& file)
+{
+	for (auto& item : data) {
+		if (!(file >> item)) {
+			return false;
+		}
+	}
+	return true;
+}
+
 Plan::Plan(char const* const name)
 	: _name(name)
 {

@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <cassert>
 #include <vector>
+#include <string>
+#include <fstream>
 
 typedef uint8_t byte;
 

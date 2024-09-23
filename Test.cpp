@@ -4,20 +4,34 @@
 #include "Sort.h"
 #include "Witness.h"
 
+void parseArgument(int argc, char* argv[], size_t& row_number, std::vector<Predicate>& predicates)
+{
+	assert(argc >= 4);
+	assert((argc - 2) % 2 == 0);
+
+	row_number = std::stoul(argv[1]);
+
+	for (int i = 2; i < argc; i += 2) {
+		size_t index = std::stoul(argv[i]);
+		size_t value = std::stoul(argv[i + 1]);
+		predicates.emplace_back(index, value);
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	TRACE(false);
 
+	size_t row_number;
 	std::vector<Predicate> predicates;
-	predicates.emplace_back(0, 1000);
-	predicates.emplace_back(2, 5000);
+	parseArgument(argc, argv, row_number, predicates);
 
 	Plan* const plan =
 		new WitnessPlan("output",
 			new SortPlan("*** The main thing! ***",
 				new WitnessPlan("input",
 					new FilterPlan("half",
-						new ScanPlan("source", 10), predicates
+						new ScanPlan("source", row_number), predicates
 					)
 				)
 			)

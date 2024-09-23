@@ -43,6 +43,18 @@ public:
 	 * @brief Prints the contents of the Row (both data and offset arrays).
 	 */
 	void printRow() const;
+
+	/**
+	 * @brief Write the data to the file.
+	 * @param file Reference to a file stream.
+	 */
+	void writeToDisk(std::ofstream& file) const;
+
+	/**
+	 * @brief Read the data from the disk.
+	 * @param file Reference to a file stream.
+	 */
+	bool readFromDisk(std::ifstream& file);
 private:
 	size_t data[ROW_LENTH];	// Array to store the data.
 	size_t offset[2];		// Array to store the OVC.
