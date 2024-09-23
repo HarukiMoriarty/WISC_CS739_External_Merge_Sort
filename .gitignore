@@ -2,4 +2,4 @@
 *.o
 *.exe
 disk/*
-!disk/
+!disk/output
