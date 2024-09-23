@@ -49,30 +49,6 @@ SortIterator::SortIterator(SortPlan const* const plan) :
 	_consumed(0), _produced(0), _runIndex(0)
 {
 	TRACE(false);
-
-	// Collect data during initialization.
-	for (Row row; _input->next(row); _input->free(row))
-	{
-		++_consumed;
-		Row* newRow = new Row(row);
-		_memory.push_back(newRow);
-
-		if (_memory.size() >= MEMORY_CAPACIY)
-		{
-			internalSort();
-			writeRunToDisk();
-			clearMemory();
-		}
-	}
-
-	if (!_memory.empty())
-	{
-		internalSort();
-		writeRunToDisk();
-		clearMemory();
-	}
-	delete _input;
-
 	_output.open("disk/output");
 	traceprintf("%s consumed %lu rows\n", _plan->_name, (unsigned long)(_consumed));
 } // SortIterator::SortIterator
@@ -93,11 +69,36 @@ SortIterator::~SortIterator()
 bool SortIterator::next(Row& row)
 {
 	TRACE(false);
+	Row* newRow = new Row(row);
+	_memory.push_back(newRow);
 
-	// Notice now we do not do external sort, so we just copy run_1 here for debugging.
-	if (_produced >= 100) return false;
-	assert(row.readFromDisk(_output));
-	++_produced;
+	if (_memory.size() >= MEMORY_CAPACIY)
+	{
+		sortMemory();
+		flushMemory();
+		clearMemory();
+		 // This should actually be done when we use the tree of loser to merge results to final files
+		_produced += MEMORY_CAPACIY;
+	}
+
+	// If there is no other input, then we flush rest of memory and start merging
+	if(!row.readFromDisk(_output)) {
+		if (!_memory.empty())
+		{
+			sortMemory();
+			flushMemory();
+			_produced += _memory.size();
+		}
+
+		// Merge logic (Tree of Loser)
+		// sortDisk(...)
+
+		traceprintf("%s produced %lu rows\n", _plan->_name, (unsigned long)(_produced));
+		return false;
+	}
+
+	++_consumed;
+	traceprintf("%s consumed %lu rows\n", _plan->_name, (unsigned long)(_consumed));
 	return true;
 } // SortIterator::next
 
@@ -106,7 +107,7 @@ void SortIterator::free(Row& row)
 	TRACE(false);
 } // SortIterator::free
 
-void SortIterator::internalSort()
+void SortIterator::sortMemory()
 {
 	if (!_memory.empty())
 	{
@@ -114,7 +115,7 @@ void SortIterator::internalSort()
 	}
 }
 
-void SortIterator::writeRunToDisk()
+void SortIterator::flushMemory()
 {
 	std::ofstream file("disk/run_" + std::to_string(_runIndex));
 	if (file.is_open()) {

@@ -4,7 +4,7 @@
 #include "Sort.h"
 #include "Witness.h"
 
-//TODO: Make this file Unit Test instead
+//TODO: Write a parser here supporting arguments (optional: --predicates=...)
 void parseArgument(int argc, char* argv[], size_t& row_number, std::vector<Predicate>& predicates)
 {
 	assert(argc >= 4);
@@ -27,16 +27,26 @@ int main(int argc, char* argv[])
 	std::vector<Predicate> predicates;
 	parseArgument(argc, argv, row_number, predicates);
 
+	// Do not filter to test sorting
 	Plan* const plan =
 		new WitnessPlan("output",
 			new SortPlan("*** The main thing! ***",
 				new WitnessPlan("input",
-					new FilterPlan("half",
-						new ScanPlan("source", row_number), predicates
-					)
+					new ScanPlan("source", row_number)
 				)
 			)
 		);
+
+	// Plan* const plan =
+	// 	new WitnessPlan("output",
+	// 		new SortPlan("*** The main thing! ***",
+	// 			new WitnessPlan("input",
+	// 				new FilterPlan("half",
+	// 					new ScanPlan("source", row_number), predicates
+	// 				)
+	// 			)
+	// 		)
+	// 	);
 
 	Iterator* const it = plan->init();
 	it->run();

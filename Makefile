@@ -1,56 +1,73 @@
-CPPOPT=-g -Og -D_DEBUG
+# Compiler options and flags
+CPPOPT = -g -Og -D_DEBUG
+# Uncomment if needed:
 # -O2 -Os -Ofast
 # -fprofile-generate -fprofile-use
-CPPFLAGS=$(CPPOPT) -Wall -ansi -pedantic -std=c++11
+CPPFLAGS = $(CPPOPT) -Wall -ansi -pedantic -std=c++11
 # -Wparentheses -Wno-unused-parameter -Wformat-security
 # -fno-rtti -std=c++11 -std=c++98
 
-# documents and scripts
-DOCS=Tasks.txt
-SCRS=
+# Documents and scripts
+DOCS = Tasks.txt
+SCRS =
 
-# headers and code sources
-HDRS=	defs.h \
-		Iterator.h Scan.h Filter.h Sort.h Witness.h
-SRCS=	defs.cpp Assert.cpp Test.cpp \
-		Iterator.cpp Scan.cpp Filter.cpp Sort.cpp Witness.cpp
+# Headers and source files
+HDRS = defs.h Iterator.h Scan.h Filter.h Sort.h Witness.h
+SRCS = defs.cpp Assert.cpp Main.cpp Test.cpp Iterator.cpp Scan.cpp Filter.cpp Sort.cpp Witness.cpp
 
-# compilation targets
-OBJS=	defs.o Assert.o Test.o \
-		Iterator.o Scan.o Filter.o Sort.o Witness.o
+# Object files for Main and Test
+MAIN_OBJS = defs.o Assert.o Main.o Iterator.o Scan.o Filter.o Sort.o Witness.o
+TEST_OBJS = defs.o Assert.o Test.o Iterator.o Scan.o Filter.o Sort.o Witness.o
 
 # RCS assists
-REV=-q -f
-MSG=no message
+REV = -q -f
+MSG = no message
 
-# default target
-#
-Test.exe : Makefile $(OBJS)
-	g++ $(CPPFLAGS) -o Test.exe $(OBJS)
+# Default target: compile both Main.exe and Test.exe
+all: Main.exe Test.exe
 
-trace : Test.exe Makefile
+# Compilation of Main.exe
+Main.exe: $(MAIN_OBJS)
+	g++ $(CPPFLAGS) -o Main.exe $(MAIN_OBJS)
+
+# Compilation of Test.exe
+Test.exe: $(TEST_OBJS)
+	g++ $(CPPFLAGS) -o Test.exe $(TEST_OBJS)
+
+# Tracing both Main.exe and Test.exe
+trace: Test.exe Main.exe Makefile
 	@date > trace
-	@size -t Test.exe $(OBJS) | sort -r >> trace
+	@size -t Test.exe $(TEST_OBJS) | sort -r >> trace
+	@size -t Main.exe $(MAIN_OBJS) | sort -r >> trace
 	./Test.exe >> trace
+	./Main.exe >> trace
 
-$(OBJS) : Makefile defs.h
-Test.o : Iterator.h Scan.h Filter.h Sort.h Witness.h
-Iterator.o Scan.o Filter.o Sort.o : Iterator.h
-Scan.o : Scan.h
-Filter.o : Filter.h
-Sort.o : Sort.h
-Witness.o : Witness.h
+# Object file dependencies
+defs.o: defs.cpp defs.h
+Assert.o: Assert.cpp defs.h
+Main.o: Main.cpp defs.h Iterator.h Scan.h Filter.h Sort.h Witness.h
+Test.o: Test.cpp defs.h Iterator.h Scan.h Filter.h Sort.h Witness.h
+Iterator.o: Iterator.cpp Iterator.h
+Scan.o: Scan.cpp Scan.h
+Filter.o: Filter.cpp Filter.h
+Sort.o: Sort.cpp Sort.h
+Witness.o: Witness.cpp Witness.h
 
-list : Makefile
+# Utility targets
+list: Makefile
 	echo Makefile $(HDRS) $(SRCS) $(DOCS) $(SCRS) > list
-count : list
+
+count: list
 	@wc `cat list`
 
-ci :
+# Check-in (ci) and check-out (co) commands for RCS
+ci:
 	ci $(REV) -m"$(MSG)" $(HDRS) $(SRCS) $(DOCS) $(SCRS)
 	ci -l $(REV) -m"$(MSG)" Makefile
-co :
+
+co:
 	co $(REV) -l $(HDRS) $(SRCS) $(DOCS) $(SCRS)
 
-clean :
-	@rm -f $(OBJS) Test.exe Test.exe.stackdump trace
+# Clean target to remove generated files
+clean:
+	@rm -f $(MAIN_OBJS) $(TEST_OBJS) Test.exe Main.exe Test.exe.stackdump Main.exe.stackdump trace

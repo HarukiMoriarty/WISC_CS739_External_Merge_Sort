@@ -22,9 +22,7 @@ public:
 	~SortIterator();
 	bool next(Row& row);
 	void free(Row& row);
-	void internalSort();
-	void writeRunToDisk();
-	void clearMemory();
+
 private:
 	SortPlan const* const _plan;
 	Iterator* const _input;
@@ -34,4 +32,14 @@ private:
 	std::vector<Row*> _memory;
 
 	std::ifstream _output;
+
+	//TODO: Implement these functions
+	// void sortCache();
+	// void flushCache();
+	// void clearCache();
+	// void sortDisk(inputstreams, outputstream); Merge & Re-Write to Disk
+
+	void sortMemory();
+	void flushMemory();
+	void clearMemory();
 }; // class SortIterator
