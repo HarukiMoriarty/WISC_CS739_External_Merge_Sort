@@ -59,16 +59,16 @@ SortIterator::SortIterator(SortPlan const* const plan) :
 
 		if (_memory.size() >= MEMORY_CAPACIY)
 		{
-			internalSort();
-			writeRunToDisk();
+			sortMemory();
+			flushMemory();
 			clearMemory();
 		}
 	}
 
 	if (!_memory.empty())
 	{
-		internalSort();
-		writeRunToDisk();
+		sortMemory();
+		flushMemory();
 		clearMemory();
 	}
 	delete _input;
@@ -106,7 +106,7 @@ void SortIterator::free(Row& row)
 	TRACE(false);
 } // SortIterator::free
 
-void SortIterator::internalSort()
+void SortIterator::sortMemory()
 {
 	if (!_memory.empty())
 	{
@@ -114,7 +114,7 @@ void SortIterator::internalSort()
 	}
 }
 
-void SortIterator::writeRunToDisk()
+void SortIterator::flushMemory()
 {
 	std::ofstream file("disk/run_" + std::to_string(_runIndex));
 	if (file.is_open()) {

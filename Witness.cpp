@@ -45,7 +45,7 @@ bool WitnessIterator::next(Row& row)
 
 	if (!_input->next(row))  return false;
 	checkOrder(row);
-	calParity(row);
+	calculateParity(row);
 	++_rows;
 	return true;
 } // WitnessIterator::next
@@ -56,7 +56,7 @@ void WitnessIterator::free(Row& row)
 	_input->free(row);
 } // WitnessIterator::free
 
-void WitnessIterator::calParity(Row& row)
+void WitnessIterator::calculateParity(Row& row)
 {
 	for (size_t i = 0; i < ROW_LENTH; i++)
 	{

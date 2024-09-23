@@ -23,7 +23,7 @@ public:
 	 * @brief Calculates and updates the parity for the provided row.
 	 * @param row Reference to the Row object for which to calculate parity.
 	 */
-	void calParity(Row& row);
+	void calculateParity(Row& row);
 
 	/**
 	 * @brief Prints the current parity values for verification.
