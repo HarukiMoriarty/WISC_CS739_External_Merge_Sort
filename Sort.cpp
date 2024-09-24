@@ -111,6 +111,10 @@ void SortIterator::sortMemory()
 	if (!_memory.empty())
 	{
 		quickSort(_memory, 0, _memory.size() - 1);
+		// We calculate offset for each run.
+		for (size_t i = 1; i < _memory.size(); i++) {
+			_memory[i]->setOffset(*_memory[0]);
+		}
 	}
 }
 
