@@ -3,55 +3,94 @@ CPPOPT = -g -Og -D_DEBUG
 # Uncomment if needed:
 # -O2 -Os -Ofast
 # -fprofile-generate -fprofile-use
-CPPFLAGS = $(CPPOPT) -Wall -ansi -pedantic -std=c++11
+CPPFLAGS = $(CPPOPT) -Wall -ansi -pedantic -std=c++11 -Iinclude
 # -Wparentheses -Wno-unused-parameter -Wformat-security
 # -fno-rtti -std=c++11 -std=c++98
+
+# Build directory
+BUILD_DIR = build
+
+# Directories for includes and source files
+INCLUDE_DIR = include
+SRC_DIR = src
 
 # Documents and scripts
 DOCS = Tasks.txt
 SCRS =
 
 # Headers and source files
-HDRS = defs.h Iterator.h Scan.h Filter.h Sort.h Witness.h
-SRCS = defs.cpp Assert.cpp Main.cpp Test.cpp Iterator.cpp Scan.cpp Filter.cpp Sort.cpp Witness.cpp
+HDRS = $(INCLUDE_DIR)/defs.h $(INCLUDE_DIR)/Iterator.h $(INCLUDE_DIR)/Scan.h \
+        $(INCLUDE_DIR)/Filter.h $(INCLUDE_DIR)/Sort.h $(INCLUDE_DIR)/Witness.h
+SRCS = $(SRC_DIR)/defs.cpp $(SRC_DIR)/Assert.cpp Main.cpp Test.cpp \
+       $(SRC_DIR)/Iterator.cpp $(SRC_DIR)/Scan.cpp $(SRC_DIR)/Filter.cpp \
+       $(SRC_DIR)/Sort.cpp $(SRC_DIR)/Witness.cpp
 
 # Object files for Main and Test
-MAIN_OBJS = defs.o Assert.o Main.o Iterator.o Scan.o Filter.o Sort.o Witness.o
-TEST_OBJS = defs.o Assert.o Test.o Iterator.o Scan.o Filter.o Sort.o Witness.o
+MAIN_OBJS = $(BUILD_DIR)/defs.o $(BUILD_DIR)/Assert.o $(BUILD_DIR)/Main.o \
+            $(BUILD_DIR)/Iterator.o $(BUILD_DIR)/Scan.o $(BUILD_DIR)/Filter.o \
+            $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o
+TEST_OBJS = $(BUILD_DIR)/defs.o $(BUILD_DIR)/Assert.o $(BUILD_DIR)/Test.o \
+            $(BUILD_DIR)/Iterator.o $(BUILD_DIR)/Scan.o $(BUILD_DIR)/Filter.o \
+            $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o
 
 # RCS assists
 REV = -q -f
 MSG = no message
 
 # Default target: compile both Main.exe and Test.exe
-all: Main.exe Test.exe
+all: $(BUILD_DIR) Main.exe Test.exe
+
+# Create build directory if it doesn't exist
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
 # Compilation of Main.exe
 Main.exe: $(MAIN_OBJS)
-	g++ $(CPPFLAGS) -o Main.exe $(MAIN_OBJS)
+	g++ $(CPPFLAGS) -o $(BUILD_DIR)/Main.exe $(MAIN_OBJS)
 
 # Compilation of Test.exe
 Test.exe: $(TEST_OBJS)
-	g++ $(CPPFLAGS) -o Test.exe $(TEST_OBJS)
+	g++ $(CPPFLAGS) -o $(BUILD_DIR)/Test.exe $(TEST_OBJS)
 
 # Tracing both Main.exe and Test.exe
 trace: Test.exe Main.exe Makefile
-	@date > trace
-	@size -t Test.exe $(TEST_OBJS) | sort -r >> trace
-	@size -t Main.exe $(MAIN_OBJS) | sort -r >> trace
-	./Test.exe >> trace
-	./Main.exe >> trace
+	@date > $(BUILD_DIR)/trace
+	@size -t $(BUILD_DIR)/Test.exe $(TEST_OBJS) | sort -r >> $(BUILD_DIR)/trace
+	@size -t $(BUILD_DIR)/Main.exe $(MAIN_OBJS) | sort -r >> $(BUILD_DIR)/trace
+	./$(BUILD_DIR)/Test.exe >> $(BUILD_DIR)/trace
+	./$(BUILD_DIR)/Main.exe >> $(BUILD_DIR)/trace
 
 # Object file dependencies
-defs.o: defs.cpp defs.h
-Assert.o: Assert.cpp defs.h
-Main.o: Main.cpp defs.h Iterator.h Scan.h Filter.h Sort.h Witness.h
-Test.o: Test.cpp defs.h Iterator.h Scan.h Filter.h Sort.h Witness.h
-Iterator.o: Iterator.cpp Iterator.h
-Scan.o: Scan.cpp Scan.h
-Filter.o: Filter.cpp Filter.h
-Sort.o: Sort.cpp Sort.h
-Witness.o: Witness.cpp Witness.h
+$(BUILD_DIR)/defs.o: $(SRC_DIR)/defs.cpp $(INCLUDE_DIR)/defs.h
+	g++ $(CPPFLAGS) -c $(SRC_DIR)/defs.cpp -o $(BUILD_DIR)/defs.o
+
+$(BUILD_DIR)/Assert.o: $(SRC_DIR)/Assert.cpp $(INCLUDE_DIR)/defs.h
+	g++ $(CPPFLAGS) -c $(SRC_DIR)/Assert.cpp -o $(BUILD_DIR)/Assert.o
+
+$(BUILD_DIR)/Main.o: Main.cpp $(INCLUDE_DIR)/defs.h $(INCLUDE_DIR)/Iterator.h \
+                     $(INCLUDE_DIR)/Scan.h $(INCLUDE_DIR)/Filter.h $(INCLUDE_DIR)/Sort.h \
+                     $(INCLUDE_DIR)/Witness.h
+	g++ $(CPPFLAGS) -c Main.cpp -o $(BUILD_DIR)/Main.o
+
+$(BUILD_DIR)/Test.o: Test.cpp $(INCLUDE_DIR)/defs.h $(INCLUDE_DIR)/Iterator.h \
+                     $(INCLUDE_DIR)/Scan.h $(INCLUDE_DIR)/Filter.h $(INCLUDE_DIR)/Sort.h \
+                     $(INCLUDE_DIR)/Witness.h
+	g++ $(CPPFLAGS) -c Test.cpp -o $(BUILD_DIR)/Test.o
+
+$(BUILD_DIR)/Iterator.o: $(SRC_DIR)/Iterator.cpp $(INCLUDE_DIR)/Iterator.h
+	g++ $(CPPFLAGS) -c $(SRC_DIR)/Iterator.cpp -o $(BUILD_DIR)/Iterator.o
+
+$(BUILD_DIR)/Scan.o: $(SRC_DIR)/Scan.cpp $(INCLUDE_DIR)/Scan.h
+	g++ $(CPPFLAGS) -c $(SRC_DIR)/Scan.cpp -o $(BUILD_DIR)/Scan.o
+
+$(BUILD_DIR)/Filter.o: $(SRC_DIR)/Filter.cpp $(INCLUDE_DIR)/Filter.h
+	g++ $(CPPFLAGS) -c $(SRC_DIR)/Filter.cpp -o $(BUILD_DIR)/Filter.o
+
+$(BUILD_DIR)/Sort.o: $(SRC_DIR)/Sort.cpp $(INCLUDE_DIR)/Sort.h
+	g++ $(CPPFLAGS) -c $(SRC_DIR)/Sort.cpp -o $(BUILD_DIR)/Sort.o
+
+$(BUILD_DIR)/Witness.o: $(SRC_DIR)/Witness.cpp $(INCLUDE_DIR)/Witness.h
+	g++ $(CPPFLAGS) -c $(SRC_DIR)/Witness.cpp -o $(BUILD_DIR)/Witness.o
 
 # Utility targets
 list: Makefile
@@ -68,6 +107,6 @@ ci:
 co:
 	co $(REV) -l $(HDRS) $(SRCS) $(DOCS) $(SCRS)
 
-# Clean target to remove generated files
+# Clean target to remove generated files but keep the build directory
 clean:
-	@rm -f $(MAIN_OBJS) $(TEST_OBJS) Test.exe Main.exe Test.exe.stackdump Main.exe.stackdump trace
+	@rm -f $(BUILD_DIR)/*
