@@ -3,3 +3,4 @@
 *.exe
 disk/*
 !disk/output
+.vscode/*
