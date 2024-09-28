@@ -31,8 +31,9 @@ public:
 
 	/**
 	 * @brief Overloading operator <=, notice used for OVC comparation.
+	 * @note We update corresponding offset during comparasion (side effect).
 	 */
-	bool operator<=(const Row& other) const;
+	bool operator<=(Row& other);
 
 	/**
 	 * @brief Overloading operator >=, notice used for data comparation.
