@@ -20,18 +20,19 @@ SCRS =
 
 # Headers and source files
 HDRS = $(INCLUDE_DIR)/defs.h $(INCLUDE_DIR)/Iterator.h $(INCLUDE_DIR)/Scan.h \
-        $(INCLUDE_DIR)/Filter.h $(INCLUDE_DIR)/Sort.h $(INCLUDE_DIR)/Witness.h
+        $(INCLUDE_DIR)/Filter.h $(INCLUDE_DIR)/Sort.h $(INCLUDE_DIR)/Witness.h \
+		$(INCLUDE_DIR)/parser.h
 SRCS = $(SRC_DIR)/defs.cpp $(SRC_DIR)/Assert.cpp Main.cpp Test.cpp \
        $(SRC_DIR)/Iterator.cpp $(SRC_DIR)/Scan.cpp $(SRC_DIR)/Filter.cpp \
-       $(SRC_DIR)/Sort.cpp $(SRC_DIR)/Witness.cpp
+       $(SRC_DIR)/Sort.cpp $(SRC_DIR)/Witness.cpp $(SRC_DIR)/parser.cpp
 
 # Object files for Main and Test
 MAIN_OBJS = $(BUILD_DIR)/defs.o $(BUILD_DIR)/Assert.o $(BUILD_DIR)/Main.o \
             $(BUILD_DIR)/Iterator.o $(BUILD_DIR)/Scan.o $(BUILD_DIR)/Filter.o \
-            $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o
+            $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o $(BUILD_DIR)/parser.o
 TEST_OBJS = $(BUILD_DIR)/defs.o $(BUILD_DIR)/Assert.o $(BUILD_DIR)/Test.o \
             $(BUILD_DIR)/Iterator.o $(BUILD_DIR)/Scan.o $(BUILD_DIR)/Filter.o \
-            $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o
+            $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o $(BUILD_DIR)/parser.o
 
 # RCS assists
 REV = -q -f
@@ -91,6 +92,9 @@ $(BUILD_DIR)/Sort.o: $(SRC_DIR)/Sort.cpp $(INCLUDE_DIR)/Sort.h
 
 $(BUILD_DIR)/Witness.o: $(SRC_DIR)/Witness.cpp $(INCLUDE_DIR)/Witness.h
 	g++ $(CPPFLAGS) -c $(SRC_DIR)/Witness.cpp -o $(BUILD_DIR)/Witness.o
+
+$(BUILD_DIR)/parser.o: $(SRC_DIR)/parser.cpp $(INCLUDE_DIR)/parser.h
+	g++ $(CPPFLAGS) -c $(SRC_DIR)/parser.cpp -o $(BUILD_DIR)/parser.o
 
 # Utility targets
 list: Makefile

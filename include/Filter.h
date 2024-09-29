@@ -1,12 +1,5 @@
 #include "Iterator.h"
 
-struct Predicate {
-	size_t _index;
-	size_t _value;
-
-	Predicate(size_t index, size_t value) : _index(index), _value(value) {}
-};
-
 class FilterPlan : public Plan
 {
 	friend class FilterIterator;

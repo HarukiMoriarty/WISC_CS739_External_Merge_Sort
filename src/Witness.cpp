@@ -35,8 +35,7 @@ WitnessIterator::~WitnessIterator()
 	delete _input;
 
 	traceprintf("%s witnessed %lu rows\n", _plan->_name, (unsigned long)(_rows));
-	traceprintf("%s witnessed %s order\n", _plan->_name, in_order ? "true" : "false");
-	printParity();
+	writeObservation();
 } // WitnessIterator::~WitnessIterator
 
 bool WitnessIterator::next(Row& row)
@@ -64,13 +63,20 @@ void WitnessIterator::calculateParity(Row& row)
 	}
 } // WitnessIterator::calParity
 
-void WitnessIterator::printParity()
+void WitnessIterator::writeObservation()
 {
-	traceprintf("Parity array: ");
-	for (auto& item : _parity) {
-		printf("%zu ", item);
+	std::ofstream outfile("witness.output", std::ios_base::app);
+	if (outfile.is_open()) {
+		outfile << _plan->_name << " witnessed " << (in_order ? "true" : "false") << " order\n";
+		outfile << "Parity " << _plan->_name << " sort: ";
+		for (auto& item : _parity) {
+			outfile << item << " ";
+		}
+		outfile << "\n";
 	}
-	printf("\n");
+	else {
+		printf("Cannot open witness output file\n");
+	}
 } // WitnessIterator::printParity
 
 void WitnessIterator::checkOrder(Row& row)

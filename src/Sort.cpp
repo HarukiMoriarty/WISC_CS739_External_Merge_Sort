@@ -73,7 +73,8 @@ SortIterator::SortIterator(SortPlan const* const plan) :
 	}
 	delete _input;
 
-	_output.open("disk/output");
+	// Notice now we do not do external sort, so we just copy run_0 here for debugging.
+	_output.open("disk/run_0");
 	traceprintf("%s consumed %lu rows\n", _plan->_name, (unsigned long)(_consumed));
 } // SortIterator::SortIterator
 
@@ -94,8 +95,7 @@ bool SortIterator::next(Row& row)
 {
 	TRACE(false);
 
-	// Notice now we do not do external sort, so we just copy run_1 here for debugging.
-	if (_produced >= 100) return false;
+	if (_produced >= _consumed) return false;
 	assert(row.readFromDisk(_output));
 	++_produced;
 	return true;
