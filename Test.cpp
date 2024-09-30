@@ -1,6 +1,6 @@
-#include "tests/PriorityQueueTest.cpp"
+#include "test/PriorityQueueTest.h"
 
 int main() {
     priorityQueueTest();
-	return 0;
+    return 0;
 }

@@ -37,7 +37,6 @@ TEST_OBJS = $(BUILD_DIR)/defs.o $(BUILD_DIR)/Assert.o $(BUILD_DIR)/Test.o \
             $(BUILD_DIR)/Iterator.o $(BUILD_DIR)/Scan.o $(BUILD_DIR)/Filter.o \
             $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o $(BUILD_DIR)/parser.o \
 			$(BUILD_DIR)/PriorityQueue.o
-
 # RCS assists
 REV = -q -f
 MSG = no message
