@@ -21,18 +21,22 @@ SCRS =
 # Headers and source files
 HDRS = $(INCLUDE_DIR)/defs.h $(INCLUDE_DIR)/Iterator.h $(INCLUDE_DIR)/Scan.h \
         $(INCLUDE_DIR)/Filter.h $(INCLUDE_DIR)/Sort.h $(INCLUDE_DIR)/Witness.h \
-		$(INCLUDE_DIR)/parser.h
+		$(INCLUDE_DIR)/parser.h \
+		$(INCLUDE_DIR)/PriorityQueue.h
 SRCS = $(SRC_DIR)/defs.cpp $(SRC_DIR)/Assert.cpp Main.cpp Test.cpp \
        $(SRC_DIR)/Iterator.cpp $(SRC_DIR)/Scan.cpp $(SRC_DIR)/Filter.cpp \
-       $(SRC_DIR)/Sort.cpp $(SRC_DIR)/Witness.cpp $(SRC_DIR)/parser.cpp
+       $(SRC_DIR)/Sort.cpp $(SRC_DIR)/Witness.cpp $(SRC_DIR)/parser.cpp \
+	   $(SRC_DIR)/PriorityQueue.cpp
 
 # Object files for Main and Test
 MAIN_OBJS = $(BUILD_DIR)/defs.o $(BUILD_DIR)/Assert.o $(BUILD_DIR)/Main.o \
             $(BUILD_DIR)/Iterator.o $(BUILD_DIR)/Scan.o $(BUILD_DIR)/Filter.o \
-            $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o $(BUILD_DIR)/parser.o
+            $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o $(BUILD_DIR)/parser.o \
+			$(BUILD_DIR)/PriorityQueue.o
 TEST_OBJS = $(BUILD_DIR)/defs.o $(BUILD_DIR)/Assert.o $(BUILD_DIR)/Test.o \
             $(BUILD_DIR)/Iterator.o $(BUILD_DIR)/Scan.o $(BUILD_DIR)/Filter.o \
-            $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o $(BUILD_DIR)/parser.o
+            $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o $(BUILD_DIR)/parser.o \
+			$(BUILD_DIR)/PriorityQueue.o
 
 # RCS assists
 REV = -q -f
@@ -70,12 +74,12 @@ $(BUILD_DIR)/Assert.o: $(SRC_DIR)/Assert.cpp $(INCLUDE_DIR)/defs.h
 
 $(BUILD_DIR)/Main.o: Main.cpp $(INCLUDE_DIR)/defs.h $(INCLUDE_DIR)/Iterator.h \
                      $(INCLUDE_DIR)/Scan.h $(INCLUDE_DIR)/Filter.h $(INCLUDE_DIR)/Sort.h \
-                     $(INCLUDE_DIR)/Witness.h
+                     $(INCLUDE_DIR)/Witness.h $(INCLUDE_DIR)/PriorityQueue.h
 	g++ $(CPPFLAGS) -c Main.cpp -o $(BUILD_DIR)/Main.o
 
 $(BUILD_DIR)/Test.o: Test.cpp $(INCLUDE_DIR)/defs.h $(INCLUDE_DIR)/Iterator.h \
                      $(INCLUDE_DIR)/Scan.h $(INCLUDE_DIR)/Filter.h $(INCLUDE_DIR)/Sort.h \
-                     $(INCLUDE_DIR)/Witness.h
+                     $(INCLUDE_DIR)/Witness.h $(INCLUDE_DIR)/PriorityQueue.h
 	g++ $(CPPFLAGS) -c Test.cpp -o $(BUILD_DIR)/Test.o
 
 $(BUILD_DIR)/Iterator.o: $(SRC_DIR)/Iterator.cpp $(INCLUDE_DIR)/Iterator.h
@@ -95,6 +99,9 @@ $(BUILD_DIR)/Witness.o: $(SRC_DIR)/Witness.cpp $(INCLUDE_DIR)/Witness.h
 
 $(BUILD_DIR)/parser.o: $(SRC_DIR)/parser.cpp $(INCLUDE_DIR)/parser.h
 	g++ $(CPPFLAGS) -c $(SRC_DIR)/parser.cpp -o $(BUILD_DIR)/parser.o
+
+$(BUILD_DIR)/PriorityQueue.o: $(SRC_DIR)/PriorityQueue.cpp $(INCLUDE_DIR)/PriorityQueue.h
+	g++ $(CPPFLAGS) -c $(SRC_DIR)/PriorityQueue.cpp -o $(BUILD_DIR)/PriorityQueue.o
 
 # Utility targets
 list: Makefile
