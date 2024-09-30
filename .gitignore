@@ -4,3 +4,4 @@
 disk/*
 !disk/output
 .vscode/*
+*.output

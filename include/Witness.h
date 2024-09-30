@@ -26,9 +26,9 @@ public:
 	void calculateParity(Row& row);
 
 	/**
-	 * @brief Prints the current parity values for verification.
+	 * @brief Writes values for verification.
 	 */
-	void printParity();
+	void writeObservation();
 
 	/**
 	 * @brief Checks if the current row is in the correct order compared to the last row.

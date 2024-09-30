@@ -139,8 +139,15 @@ int msbi(size_t const x);
 char const* YesNo(bool const b);
 char const* OkBad(bool const b);
 
+struct Predicate {
+	size_t _index;
+	size_t _value;
+
+	Predicate(size_t index, size_t value) : _index(index), _value(value) {}
+};
+
 // Following are experiment config
 #define ROW_LENTH 10
 #define VALUE_RANGE 1000
 #define CACHE_CAPACITY 10
-#define MEMORY_CAPACIY 100 // For now we treat this same as fan-in
+#define MEMORY_CAPACIY 1000 // For now we treat this same as fan-in
