@@ -22,3 +22,6 @@ jobs:
     - name: Run Valgrind to check for memory leaks
       run: |
         valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./build/Test.exe --row_number=160 --predicates=1:100
+
+    - name: Run unit test
+      run: ./build/Test.exe
