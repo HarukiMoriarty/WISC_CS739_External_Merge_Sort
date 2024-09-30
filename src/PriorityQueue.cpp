@@ -96,6 +96,7 @@ PriorityQueue::~PriorityQueue()
 
 bool PriorityQueue::empty()
 {
+    // This function is special, if root node is early_fence, then we re-order the tree to kick out this node
     Node const& hr = heap[root()];
     while (hr.key == early_fence(hr.index))
         pass(hr.index, late_fence(hr.index));
@@ -165,23 +166,30 @@ void PriorityQueue::pass(Index index, Key key)
             heap[dest] = heap[slot];
             dest = slot;
         } while (slot != root());
+
     heap[dest] = candidate;
 }
 
 void PriorityQueue::printQueue() {
+    // This both help check if queue is empty and also re-order to tree to a presentable form
+    if (empty()) {
+        std::cout << "Priority Queue is empty" << std::endl;
+        return;
+    }
+
     std::cout << "Priority Queue Contents:" << std::endl;
-    printQueueRecursive(1, 0, "Root");
+    printQueueRecursive(root(), 0, "Root");
 }
 
 void PriorityQueue::printQueueRecursive(Index index, int indent, std::string label) {
-    if (index >= Index(1 << (height + 1))) return;
+    if (index >= capacity() || heap[index].key == late_fence(index)) return;
 
-    // Print current node
-    std::cout << std::string(indent, ' ') << label << ": Index " << heap[index].index << ", Key " << heap[index].key << std::endl;
+    // Print scaled key
+    std::cout << std::string(indent, ' ') << label << ": Index " << heap[index].index << ", Scaled Key " << heap[index].key << ", Unscaled Key " << heap[index].key - early_fence(capacity()) << std::endl;
 
-    // Print tree connections
-    Index left = 2 * index;
-    Index right = 2 * index + 1;
+    // Calculate left and right children
+    Index left = 2 * index + 1;
+    Index right = 2 * index + 2;
 
     // Recursively print left and right children
     printQueueRecursive(left, indent + 4, "L");

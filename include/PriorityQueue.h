@@ -23,6 +23,7 @@ class PriorityQueue {
 private:
     Level height;
     Node* heap;
+    unsigned int size;
 
     bool even(Index index, Level shift);
     Index capacity() const;
@@ -31,6 +32,7 @@ private:
     void leaf(Index index, Index& slot, Level& level) const;
     void parent(Index& slot);
     void parent(Index& slot, Level& level);
+    void pass(Index index, Key key);
     Key early_fence(Index index) const;
     Key late_fence(Index index) const;
     void printQueueRecursive(Index index, int indent, std::string label);
@@ -47,6 +49,5 @@ public:
     void insert(Index index, Key key);
     void update(Index index, Key key);
     void remove(Index index);
-    void pass(Index index, Key key);
     void printQueue();
 };
