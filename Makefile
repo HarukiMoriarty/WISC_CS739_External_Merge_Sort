@@ -13,6 +13,7 @@ BUILD_DIR = build
 # Directories for includes and source files
 INCLUDE_DIR = include
 SRC_DIR = src
+TEST_DIR = test
 
 # Documents and scripts
 DOCS = Tasks.txt
@@ -78,7 +79,8 @@ $(BUILD_DIR)/Main.o: Main.cpp $(INCLUDE_DIR)/defs.h $(INCLUDE_DIR)/Iterator.h \
 
 $(BUILD_DIR)/Test.o: Test.cpp $(INCLUDE_DIR)/defs.h $(INCLUDE_DIR)/Iterator.h \
                      $(INCLUDE_DIR)/Scan.h $(INCLUDE_DIR)/Filter.h $(INCLUDE_DIR)/Sort.h \
-                     $(INCLUDE_DIR)/Witness.h $(INCLUDE_DIR)/PriorityQueue.h
+                     $(INCLUDE_DIR)/Witness.h $(INCLUDE_DIR)/PriorityQueue.h \
+					 $(TEST_DIR)/PriorityQueueTest.h
 	g++ $(CPPFLAGS) -c Test.cpp -o $(BUILD_DIR)/Test.o
 
 $(BUILD_DIR)/Iterator.o: $(SRC_DIR)/Iterator.cpp $(INCLUDE_DIR)/Iterator.h

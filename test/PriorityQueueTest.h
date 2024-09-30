@@ -13,22 +13,22 @@ void testPushAndPop()
 {
     PriorityQueue pq(2);
     pq.push(1, 10);
-    pq.printQueue();
+    // pq.printQueue();
     pq.push(2, 5);
     pq.push(3, 15);
-    //pq.printQueue();
+    // pq.printQueue();
 
-    //std::cout << "testPushAndPop(): Top element: " << pq.top() << std::endl;
+    // std::cout << "testPushAndPop(): Top element: " << pq.top() << std::endl;
     assert(pq.top() == 2); // Expect minimum value
-    //pq.printQueue();
+    // pq.printQueue();
 
     pq.pop();
-    //std::cout << "testPushAndPop(): Top element after pop: " << pq.top() << std::endl;
+    // std::cout << "testPushAndPop(): Top element after pop: " << pq.top() << std::endl;
     assert(pq.top() == 1);
-    //pq.printQueue();
+    // pq.printQueue();
 
     pq.pop();
-    //std::cout << "testPushAndPop(): Top element after second pop: " << pq.top() << std::endl;
+    // std::cout << "testPushAndPop(): Top element after second pop: " << pq.top() << std::endl;
     assert(pq.top() == 3);
 
     pq.pop();
@@ -111,8 +111,12 @@ void testOverlappingIndices()
 
 int priorityQueueTest()
 {
-    //testEmptyQueue();
+    testEmptyQueue();
     testPushAndPop();
+    testUpdatePriority();
+    testRemove();
+    testMultipleItemsSamePriority();
+    testOverlappingIndices();
     std::cout << "All Priority Queue Tests PASSED!" << std::endl;
     return 0;
 }
