@@ -96,7 +96,7 @@ void testOverlappingIndices()
 
     while (!pq.empty())
     {
-        // pq.printQueue();
+        pq.printQueue();
         unsigned int poppedValue = pq.pop();
         assert(poppedValue == expectedIndices[popCount]);
         popCount += 1;
