@@ -178,18 +178,19 @@ void PriorityQueue::printQueue() {
     }
 
     std::cout << "Priority Queue Contents:" << std::endl;
-    printQueueRecursive(root(), 0, "Root");
+    std::cout << "Winner Root" << ": Index " << heap[0].index << ", Scaled Key " << heap[0].key << ", Unscaled Key " << heap[0].key - early_fence(capacity()) << std::endl;
+    printQueueRecursive(root() + 1, 4, "Loser Root");
 }
 
 void PriorityQueue::printQueueRecursive(Index index, int indent, std::string label) {
-    if (index >= capacity() || heap[index].key == late_fence(index)) return;
+    if (index >= capacity()) return;
 
     // Print scaled key
     std::cout << std::string(indent, ' ') << label << ": Index " << heap[index].index << ", Scaled Key " << heap[index].key << ", Unscaled Key " << heap[index].key - early_fence(capacity()) << std::endl;
 
     // Calculate left and right children
-    Index left = 2 * index + 1;
-    Index right = 2 * index + 2;
+    Index left = 2 * index;
+    Index right = 2 * index + 1;
 
     // Recursively print left and right children
     printQueueRecursive(left, indent + 4, "L");
