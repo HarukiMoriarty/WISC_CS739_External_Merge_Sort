@@ -26,7 +26,7 @@ void Row::initData(size_t range)
 
 size_t Row::getData(size_t index) const
 {
-	assert(index < ROW_LENTH);
+	assert(index < ROW_LENGTH);
 	return data[index];
 } // Row::getData
 
@@ -34,11 +34,11 @@ void Row::setOffset(const Row& other)
 {
 	TRACE(false);
 
-	for (size_t i = 0; i < ROW_LENTH; ++i)
+	for (size_t i = 0; i < ROW_LENGTH; ++i)
 	{
 		if (data[i] != other.data[i])
 		{
-			offset[0] = ROW_LENTH - i;
+			offset[0] = ROW_LENGTH - i;
 			offset[1] = data[i];
 			return;
 		}
@@ -68,7 +68,7 @@ bool Row::operator<=(Row& other)
 
 	// If the offset arrays are equal, then compare the data arrays element by element 
 	// start from the same offset postion.
-	for (size_t i = offset[0] + 1; i < ROW_LENTH; ++i)
+	for (size_t i = offset[0] + 1; i < ROW_LENGTH; ++i)
 	{
 		if (data[i] < other.data[i])
 		{
@@ -94,7 +94,7 @@ bool Row::operator<=(Row& other)
 bool Row::operator>=(const Row& other) const
 {
 	// Compare the data arrays element by element.
-	for (size_t i = 0; i < ROW_LENTH; ++i)
+	for (size_t i = 0; i < ROW_LENGTH; ++i)
 	{
 		if (data[i] > other.data[i]) {
 			return true;
@@ -110,7 +110,7 @@ bool Row::operator>=(const Row& other) const
 void Row::printRow() const
 {
 	printf("Row data: ");
-	for (size_t i = 0; i < ROW_LENTH; ++i)
+	for (size_t i = 0; i < ROW_LENGTH; ++i)
 	{
 		printf("%zu ", data[i]);
 	}

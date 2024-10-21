@@ -57,7 +57,7 @@ void WitnessIterator::free(Row& row)
 
 void WitnessIterator::calculateParity(Row& row)
 {
-	for (size_t i = 0; i < ROW_LENTH; i++)
+	for (size_t i = 0; i < ROW_LENGTH; i++)
 	{
 		_parity[i] ^= row.getData(i);
 	}

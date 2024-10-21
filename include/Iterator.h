@@ -57,7 +57,7 @@ public:
 	 */
 	bool readFromDisk(std::ifstream& file);
 private:
-	size_t data[ROW_LENTH];	// Array to store the data.
+	size_t data[ROW_LENGTH];	// Array to store the data.
 	size_t offset[2];		// Array to store the OVC.
 }; // class Row
 
