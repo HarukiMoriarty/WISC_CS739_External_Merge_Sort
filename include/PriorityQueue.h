@@ -1,52 +1,88 @@
 #pragma once
 
+#include <defs.h>
 #include <iostream>
 
 typedef unsigned int Index;
-typedef unsigned int Key;
+typedef int Offset;
 typedef char Level;
 
-/**
- * @brief Represents a node in the Priority Queue
- * 
- */
-struct Node {
-    Index index;
-    Key key;
+struct Key {
+    int offset;
+    int value;
 
-    Node();
+    // Constructor for easy initialization
+    Key(int o = 0, int v = 0) : offset(o), value(v) {}
 
-    Node(Index idx, Key k);
+    // Print function to output in "offset@value" format
+    void toString() const {
+        std::cout << offset << "@" << value;
+    }
 
-    /**
-     * @brief Swap values with another node
-     * 
-     * @param other 
-     */
-    void swap(Node &other);
+    // Overload the != operator
+    bool operator!=(const Key& other) const {
+        return offset != other.offset || value != other.value;
+    }
 
-    /**
-     * @brief Compare with another node (TODO: need extension for OVC)
-     * 
-     * @param other 
-     * @return true 
-     * @return false 
-     */
-    bool less(Node& other);
+    // Overload the == operator
+    bool operator==(const Key& other) const {
+        return offset == other.offset && value == other.value;
+    }
 
-    /**
-     * @brief Check if two nodes are siblings by comparing parent's index (bit shifting)
-     * 
-     * @param other 
-     * @param level 
-     * @return true 
-     * @return false 
-     */
-    bool sibling(Node& other, Level level);
+    // Overload the < operator
+    bool operator<(const Key& other) const {
+        if (offset < other.offset) {
+            return true; // This object is less than other
+        }
+        if (offset > other.offset) {
+            return false; // This object is greater than other
+        }
+        return value < other.value; // Compare values if offsets are equal
+    }
 };
 
 class PriorityQueue {
 private:
+    /**
+     * @brief Represents a node in the Priority Queue
+     * 
+     */
+    struct Node {
+        Index index;
+        Key key;
+        const size_t* data;
+
+        Node();
+
+        Node(Index idx, Key k);
+
+        /**
+         * @brief Swap values with another node
+         * 
+         * @param other
+         */
+        void swap(Node &other);
+
+        /**
+         * @brief Compare with another node (TODO: need extension for OVC)
+         * 
+         * @param other 
+         * @return true 
+         * @return false 
+         */
+        bool less(Node& other, bool const full);
+
+        /**
+         * @brief Check if two nodes are siblings by comparing parent's index (bit shifting)
+         * 
+         * @param other 
+         * @param level 
+         * @return true 
+         * @return false 
+         */
+        bool sibling(Node& other, Level level);
+    };
+
     Level height;
     Node* heap;
 
@@ -114,7 +150,7 @@ private:
      * @param index 
      * @param key 
      */
-    void pass(Index index, Key key);
+    void pass(Index index, Key key, bool full_comp);
 
     /**
      * @brief Key(early_fence) = index_value
@@ -125,7 +161,7 @@ private:
      * @param index 
      * @return Key 
      */
-    Key early_fence(Index index) const;
+    Key early_fence() const;
 
     /**
      * @brief Do a bit wise operation to get late_fence, this usually get a huge value without much effort
@@ -133,7 +169,7 @@ private:
      * @param index 
      * @return Key 
      */
-    Key late_fence(Index index) const;
+    Key late_fence() const;
 
     /**
      * @brief Recursive function to print the queue
