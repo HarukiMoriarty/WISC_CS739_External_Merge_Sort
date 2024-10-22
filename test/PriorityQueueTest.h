@@ -20,7 +20,7 @@ void testPushAndPop()
     const size_t data[ROW_LENGTH] = {0};
 
     pq.push(1, key1, data);
-    // pq.printQueue();
+    pq.printQueue();
     pq.push(2, key2, data);
     pq.push(3, key3, data);
     // pq.printQueue();
