@@ -7,6 +7,8 @@ typedef unsigned int Index;
 typedef int Offset;
 typedef char Level;
 
+const size_t fence_data[ROW_LENGTH] = {0};
+
 struct Key {
     int offset;
     int value;
@@ -15,8 +17,9 @@ struct Key {
     Key(int o = 0, int v = 0) : offset(o), value(v) {}
 
     // Print function to output in "offset@value" format
-    void toString() const {
-        std::cout << offset << "@" << value;
+    friend std::ostream& operator<<(std::ostream& os, const Key& data) {
+        os << data.offset << "@" << data.value;
+        return os;
     }
 
     // Overload the != operator
@@ -54,7 +57,7 @@ private:
 
         Node();
 
-        Node(Index idx, Key k);
+        Node(Index idx, Key k, const size_t* data);
 
         /**
          * @brief Swap values with another node
@@ -149,8 +152,10 @@ private:
      * 
      * @param index 
      * @param key 
+     * @param full_comp
+     * @param data
      */
-    void pass(Index index, Key key, bool full_comp);
+    void pass(Index index, Key key, bool full_comp, const size_t* data);
 
     /**
      * @brief Key(early_fence) = index_value
@@ -201,11 +206,12 @@ public:
      * Need to implement when-to-add logic in the Sort iterator
      * 
      * @param index 
-     * @param key 
+     * @param offset
+     * @param  
      */
-    void push(Index index, Key key);
-    void insert(Index index, Key key);
-    void update(Index index, Key key);
+    void push(Index index, Key key, const size_t* data);
+    void insert(Index index, Key key, const size_t* data);
+    void update(Index index, Key key, const size_t* data);
 
     /**
      * @brief Remove a node from the tree (using late_fence)
@@ -220,4 +226,6 @@ public:
      * 
      */
     void printQueue();
+
+    void printQueueWOReorder();
 };
