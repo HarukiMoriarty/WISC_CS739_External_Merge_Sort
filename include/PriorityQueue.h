@@ -166,7 +166,7 @@ private:
      * @param index 
      * @return Key 
      */
-    Key early_fence() const;
+    Key early_fence(Index index) const;
 
     /**
      * @brief Do a bit wise operation to get late_fence, this usually get a huge value without much effort
@@ -174,7 +174,7 @@ private:
      * @param index 
      * @return Key 
      */
-    Key late_fence() const;
+    Key late_fence(Index index) const;
 
     /**
      * @brief Recursive function to print the queue

@@ -22,18 +22,6 @@ bool PriorityQueue::Node::less(Node& other, bool const full)
     // Full comparision if OVC is same
     bool isLess = false;
 
-    if (offset == 11) return isLess;
-    if (other.key.offset == 11) {
-        isLess = true;
-        return isLess;
-    }
-
-    if (other.key.offset == -1) return isLess;
-    if (offset == -1) {
-        isLess = true;
-        return isLess;
-    }
-
     while (++offset < ROW_LENGTH)
         if (data[offset] != other.data[offset])
         {
@@ -42,8 +30,9 @@ bool PriorityQueue::Node::less(Node& other, bool const full)
         }
     Node & loser = (isLess ? other : * this);
 
-    // Update the key of the loser
-    loser.key = loser.data[offset];
+    // Update the key of the loser except fence key
+    if (loser.key.offset >= 0 && loser.key.offset < ROW_LENGTH)
+        loser.key = loser.data[offset];
     return isLess;
 }
 
@@ -91,16 +80,16 @@ void PriorityQueue::parent(Index& slot, Level& level)
     parent(slot);
 }
 
-Key PriorityQueue::early_fence() const
+Key PriorityQueue::early_fence(Index index) const
 {
     // Do not do full_comp
-    return Key(-1, -1);
+    return Key(-index, -1);
 }
 
-Key PriorityQueue::late_fence() const
+Key PriorityQueue::late_fence(Index index) const
 {
     // Do not do full_comp
-    return Key(ROW_LENGTH + 1, 1);
+    return Key(ROW_LENGTH + index, 1);
 }
 
 PriorityQueue::PriorityQueue(Level h) : height(h), heap(new Node[1 << h])
@@ -117,11 +106,11 @@ PriorityQueue::PriorityQueue(Level h) : height(h), heap(new Node[1 << h])
         } while (even(index, level - 1));
 
         heap[slot].index = index;
-        heap[slot].key = early_fence();
+        heap[slot].key = early_fence(index);
         heap[slot].data = fence_data;
     }
     heap[root()].index = Index(0);
-    heap[root()].key = early_fence();
+    heap[root()].key = early_fence(Index(0));
     heap[root()].data = fence_data;
 }
 
@@ -134,18 +123,18 @@ bool PriorityQueue::empty()
 {
     // This function is special, if root node is early_fence, then we re-order the tree to kick out this node
     Node const& hr = heap[root()];
-    while (hr.key == early_fence())
+    while (hr.key == early_fence(hr.index))
     {
-        pass(hr.index, late_fence(), false, fence_data);
+        pass(hr.index, late_fence(hr.index), false, fence_data);
     }
-    return hr.key == late_fence();
+    return hr.key == late_fence(hr.index);
 }
 
 Index PriorityQueue::poptop(bool invalidate)
 {
     if (empty()) return -1; // badIndex
     if (invalidate)
-        heap[root()].key = early_fence();
+        heap[root()].key = early_fence(heap[root()].index);
     return heap[root()].index;
 }
 
@@ -176,7 +165,7 @@ void PriorityQueue::update(Index index, Key key, const size_t* data)
 
 void PriorityQueue::remove(Index index)
 {
-    pass(index, late_fence(), true, fence_data);
+    pass(index, late_fence(index), true, fence_data);
 }
 
 inline void setMax(Key & x, Key const y) {if(x < y) x = y;}
@@ -193,7 +182,7 @@ void PriorityQueue::pass(Index index, Key key, bool full_comp, const size_t* dat
 
     Index dest = slot;
     if (slot != root() && candidate.index == index &&
-        key != late_fence() && heap[slot].key != early_fence())
+        key != late_fence(index) && heap[slot].key != early_fence(index))
         do
         {
             Level const dest_level = level;
