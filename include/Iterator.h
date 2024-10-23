@@ -30,12 +30,6 @@ public:
 	void setOffset(const Row& other);
 
 	/**
-	 * @brief Overloading operator <=, notice used for OVC comparation.
-	 * @note We update corresponding offset during comparasion (side effect).
-	 */
-	bool operator<=(Row& other);
-
-	/**
 	 * @brief Overloading operator >=, notice used for data comparation.
 	 */
 	bool operator>=(const Row& other) const;
@@ -57,8 +51,8 @@ public:
 	 */
 	bool readFromDisk(std::ifstream& file);
 private:
-	size_t data[ROW_LENGTH];	// Array to store the data.
-	size_t offset[2];		// Array to store the OVC.
+	std::vector<size_t> data;		// Array to store the data.
+	std::vector<size_t> offset;		// Array to store the OVC.
 }; // class Row
 
 class Plan

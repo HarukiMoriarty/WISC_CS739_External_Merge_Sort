@@ -1,6 +1,7 @@
 #include "Sort.h"
 
 // Internal Sort Helper function
+//===================================================================
 int partition(std::vector<Row*>& rows, int low, int high)
 {
 	Row* pivot = rows[high];
@@ -24,7 +25,7 @@ void quickSort(std::vector<Row*>& rows, int low, int high)
 		quickSort(rows, pi + 1, high);
 	}
 }
-
+//=====================================================================
 
 SortPlan::SortPlan(char const* const name, Plan* const input)
 	: Plan(name), _input(input)
@@ -82,9 +83,9 @@ SortIterator::~SortIterator()
 {
 	TRACE(false);
 
-	for (Row* row : _memory)
+	for (size_t i = 0; i < _memory.size(); i++)
 	{
-		delete row;
+		delete _memory[i];
 	}
 	_output.close();
 
@@ -122,8 +123,8 @@ void SortIterator::flushMemory()
 {
 	std::ofstream file("disk/run_" + std::to_string(_runIndex));
 	if (file.is_open()) {
-		for (const Row* row : _memory) {
-			row->writeToDisk(file);  // Replace this with actual Row serialization logic
+		for (size_t i = 0; i < _memory.size(); i++) {
+			_memory[i]->writeToDisk(file);  // Replace this with actual Row serialization logic
 		}
 		file.close();
 		_runIndex++;
@@ -135,8 +136,8 @@ void SortIterator::flushMemory()
 
 void SortIterator::clearMemory()
 {
-	for (Row* row : _memory) {
-		delete row;
+	for (size_t i = 0; i < _memory.size(); i++) {
+		delete _memory[i];
 	}
 	_memory.clear();
 }
