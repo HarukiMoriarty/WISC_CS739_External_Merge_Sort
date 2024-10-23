@@ -67,7 +67,7 @@ void WitnessIterator::writeObservation()
 	if (outfile.is_open()) {
 		outfile << _plan->_name << " witnessed " << (in_order ? "true" : "false") << " order\n";
 		outfile << "Parity " << _plan->_name << " sort: ";
-		for (size_t i = 0; i++; i < _parity.size()) {
+		for (size_t i = 0; i < _parity.size(); i++) {
 			outfile << _parity[i] << " ";
 		}
 		outfile << "\n";
