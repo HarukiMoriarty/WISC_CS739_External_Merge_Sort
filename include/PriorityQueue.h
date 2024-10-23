@@ -18,7 +18,19 @@ struct Key {
 
     // Print function to output in "offset@value" format
     friend std::ostream& operator<<(std::ostream& os, const Key& data) {
-        os << data.offset << "@" << data.value;
+        if (data.offset == 0 && data.value == -1)
+        {
+            os << "early_fence(0)";
+        }
+        else if (data.offset >= 0 && data.offset < ROW_LENGTH) {
+            os << data.offset << "@" << data.value;
+        }
+        else if (data.offset < 0) {
+            os << "early_fence("  << data.offset * (-1) << ")";
+        }
+        else {
+            os << "late_fence(" << data.offset - ROW_LENGTH << ")";
+        }
         return os;
     }
 
