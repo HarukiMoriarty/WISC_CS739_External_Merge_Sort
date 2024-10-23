@@ -3,12 +3,9 @@
 Row::Row()
 {
 	TRACE(false);
-	for (auto& item : data) {
-		item = 0;
-	}
-	for (auto& item : offset) {
-		item = 0;
-	}
+
+	data.resize(ROW_LENGTH, 0);
+	offset.resize(2, 0);
 } // Row::Row
 
 Row::~Row()
@@ -19,8 +16,8 @@ Row::~Row()
 void Row::initData(size_t range)
 {
 	TRACE(false);
-	for (auto& item : data) {
-		item = Random(range);
+	for (size_t i = 0; i < data.size(); i++) {
+		data[i] = Random(range);
 	}
 } // Row::setData
 
@@ -48,48 +45,6 @@ void Row::setOffset(const Row& other)
 	offset[0] = 0;
 	offset[1] = 0;
 } // Row::setOffset
-
-bool Row::operator<=(Row& other)
-{
-	// First compare the offset arrays element by element.
-	// Tricky: if two rows build offset based on same basement, and there offset
-	// is different, after comparasion the loser offset based on winner keep same.
-	for (size_t i = 0; i < 2; ++i)
-	{
-		if (offset[i] < other.offset[i])
-		{
-			return true;
-		}
-		else if (offset[i] > other.offset[i])
-		{
-			return false;
-		}
-	}
-
-	// If the offset arrays are equal, then compare the data arrays element by element 
-	// start from the same offset postion.
-	for (size_t i = offset[0] + 1; i < ROW_LENGTH; ++i)
-	{
-		if (data[i] < other.data[i])
-		{
-			other.offset[0] = i;
-			other.offset[1] = other.data[i];
-			return true;
-		}
-		else if (data[i] > other.data[i])
-		{
-			offset[0] = i;
-			offset[1] = data[i];
-			return false;
-		}
-	}
-
-	// If both offset and data arrays are equal, return true.
-	// Suppose we always choose the current one as the winner.
-	other.offset[0] = 0;
-	other.offset[1] = 0;
-	return true;
-} // Row::operator<=
 
 bool Row::operator>=(const Row& other) const
 {
@@ -125,15 +80,15 @@ void Row::printRow() const
 void Row::writeToDisk(std::ofstream& file) const
 {
 	// Write data array
-	for (size_t val : data)
+	for (size_t i = 0; i < data.size(); i++)
 	{
-		file << val << " ";
+		file << data[i] << " ";
 	}
 
 	// Write offset array
-	for (size_t val : offset)
+	for (size_t i = 0; i < offset.size(); i++)
 	{
-		file << val << " ";
+		file << offset[i] << " ";
 	}
 
 	// End with a newline to seperate rows
@@ -143,15 +98,15 @@ void Row::writeToDisk(std::ofstream& file) const
 bool Row::readFromDisk(std::ifstream& file)
 {
 	// Read data array
-	for (auto& item : data) {
-		if (!(file >> item)) {
+	for (size_t i = 0; i < data.size(); i++) {
+		if (!(file >> data[i])) {
 			return false;
 		}
 	}
 
 	// Read offset array
-	for (auto& item : offset) {
-		if (!(file >> item)) {
+	for (size_t i = 0; i < offset.size(); i++) {
+		if (!(file >> offset[i])) {
 			return false;
 		}
 	}

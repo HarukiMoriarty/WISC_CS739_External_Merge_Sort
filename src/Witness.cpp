@@ -23,9 +23,7 @@ WitnessIterator::WitnessIterator(WitnessPlan const* const plan) :
 	_rows(0), in_order(true)
 {
 	TRACE(false);
-	for (auto& item : _parity) {
-		item = 0;
-	}
+	_parity.resize(ROW_LENGTH, 0);
 } // WitnessIterator::WitnessIterator
 
 WitnessIterator::~WitnessIterator()
@@ -69,8 +67,8 @@ void WitnessIterator::writeObservation()
 	if (outfile.is_open()) {
 		outfile << _plan->_name << " witnessed " << (in_order ? "true" : "false") << " order\n";
 		outfile << "Parity " << _plan->_name << " sort: ";
-		for (auto& item : _parity) {
-			outfile << item << " ";
+		for (size_t i = 0; i++; i < _parity.size()) {
+			outfile << _parity[i] << " ";
 		}
 		outfile << "\n";
 	}
