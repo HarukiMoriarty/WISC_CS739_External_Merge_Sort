@@ -8,6 +8,7 @@ void PriorityQueue::Node::swap(Node& other)
 {
     std::swap(index, other.index);
     std::swap(key, other.key);
+    std::swap(data, other.data);
 }
 
 bool PriorityQueue::Node::less(Node& other, bool const full)
@@ -22,17 +23,21 @@ bool PriorityQueue::Node::less(Node& other, bool const full)
     // Full comparision if OVC is same
     bool isLess = false;
 
-    while (++offset < ROW_LENGTH)
-        if (data[offset] != other.data[offset])
+    while (--offset > 0)
+    {
+        if (data[ROW_LENGTH - offset] != other.data[ROW_LENGTH - offset])
         {
-            isLess = data[offset] < other.data[offset];
+            isLess = data[ROW_LENGTH - offset] < other.data[ROW_LENGTH - offset];
             break;
         }
+    }
     Node & loser = (isLess ? other : * this);
 
     // Update the key of the loser except fence key
     if (loser.key.offset >= 0 && loser.key.offset < ROW_LENGTH)
-        loser.key = loser.data[offset];
+    {
+        loser.key = Key(offset, int(loser.data[offset]));
+    }
     return isLess;
 }
 
@@ -165,7 +170,7 @@ void PriorityQueue::update(Index index, Key key, const size_t* data)
 
 void PriorityQueue::remove(Index index)
 {
-    pass(index, late_fence(index), true, fence_data);
+    pass(index, late_fence(index), false, fence_data);
 }
 
 inline void setMax(Key & x, Key const y) {if(x < y) x = y;}
@@ -211,7 +216,7 @@ void PriorityQueue::printQueue() {
     }
 
     std::cout << "Priority Queue Contents:" << std::endl;
-    std::cout << "Winner Root" << ": Index " << heap[0].index << ", Scaled Key " << heap[0].key << ", Unscaled Key " << heap[0].key  << std::endl;
+    std::cout << "Winner Root" << ": Index " << heap[0].index << ", Key " << heap[0].key << std::endl;
     printQueueRecursive(root() + 1, 4, "Loser Root");
 }
 
@@ -219,7 +224,7 @@ void PriorityQueue::printQueueRecursive(Index index, int indent, std::string lab
     if (index >= capacity()) return;
 
     // Print scaled key
-    std::cout << std::string(indent, ' ') << label << ": Index " << heap[index].index << ", Scaled Key " << heap[index].key << ", Unscaled Key " << heap[index].key  << std::endl;
+    std::cout << std::string(indent, ' ') << label << ": Index " << heap[index].index << ", Key " << heap[index].key << std::endl;
 
     // Calculate left and right children
     Index left = 2 * index;
