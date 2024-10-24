@@ -1,14 +1,13 @@
 #include "PriorityQueue.h"
 
-PriorityQueue::Node::Node() : index(0), key(0) {}
+PriorityQueue::Node::Node() : index(0), key(Key()) {}
 
-PriorityQueue::Node::Node(Index idx, Key k, const size_t* data) : index(idx), key(k), data(data) {}
+PriorityQueue::Node::Node(Index idx, Key k) : index(idx), key(k) {}
 
 void PriorityQueue::Node::swap(Node& other)
 {
     std::swap(index, other.index);
     std::swap(key, other.key);
-    std::swap(data, other.data);
 }
 
 bool PriorityQueue::Node::less(Node& other, bool const full)
@@ -18,27 +17,10 @@ bool PriorityQueue::Node::less(Node& other, bool const full)
     Offset offset;
     if (full) offset = Offset(-1);
     else if (key != other.key) return (key < other.key);
-    else offset = key.offset;
+    else offset = key.getOffset();
 
     // Full comparision if OVC is same
-    bool isLess = false;
-
-    while (--offset > 0)
-    {
-        if (data[ROW_LENGTH - offset] != other.data[ROW_LENGTH - offset])
-        {
-            isLess = data[ROW_LENGTH - offset] < other.data[ROW_LENGTH - offset];
-            break;
-        }
-    }
-    Node & loser = (isLess ? other : * this);
-
-    // Update the key of the loser except fence key
-    if (loser.key.offset >= 0 && loser.key.offset < ROW_LENGTH)
-    {
-        loser.key = Key(offset, int(loser.data[offset]));
-    }
-    return isLess;
+    return key.less(other.key, offset);
 }
 
 bool PriorityQueue::Node::sibling(Node& other, Level level)
@@ -88,13 +70,13 @@ void PriorityQueue::parent(Index& slot, Level& level)
 Key PriorityQueue::early_fence(Index index) const
 {
     // Do not do full_comp
-    return Key(-index, -1);
+    return Key(true, index);
 }
 
 Key PriorityQueue::late_fence(Index index) const
 {
     // Do not do full_comp
-    return Key(ROW_LENGTH + index, 1);
+    return Key(false, index);
 }
 
 PriorityQueue::PriorityQueue(Level h) : height(h), heap(new Node[1 << h])
@@ -112,11 +94,9 @@ PriorityQueue::PriorityQueue(Level h) : height(h), heap(new Node[1 << h])
 
         heap[slot].index = index;
         heap[slot].key = early_fence(index);
-        heap[slot].data = fence_data;
     }
     heap[root()].index = Index(0);
     heap[root()].key = early_fence(Index(0));
-    heap[root()].data = fence_data;
 }
 
 PriorityQueue::~PriorityQueue()
@@ -130,7 +110,7 @@ bool PriorityQueue::empty()
     Node const& hr = heap[root()];
     while (hr.key == early_fence(hr.index))
     {
-        pass(hr.index, late_fence(hr.index), false, fence_data);
+        pass(hr.index, late_fence(hr.index), false);
     }
     return hr.key == late_fence(hr.index);
 }
@@ -153,31 +133,31 @@ Index PriorityQueue::pop()
     return poptop(true);
 }
 
-void PriorityQueue::push(Index index, Key key, const size_t* data)
+void PriorityQueue::push(Index index, Key key)
 {
-    pass(index, key, false, data);
+    pass(index, key, false);
 }
 
-void PriorityQueue::insert(Index index, Key key, const size_t* data)
+void PriorityQueue::insert(Index index, Key key)
 {
-    push(index, key, data);
+    push(index, key);
 }
 
-void PriorityQueue::update(Index index, Key key, const size_t* data)
+void PriorityQueue::update(Index index, Key key)
 {
-    push(index, key, data);
+    push(index, key);
 }
 
 void PriorityQueue::remove(Index index)
 {
-    pass(index, late_fence(index), false, fence_data);
+    pass(index, late_fence(index), false);
 }
 
 inline void setMax(Key & x, Key const y) {if(x < y) x = y;}
 
-void PriorityQueue::pass(Index index, Key key, bool full_comp, const size_t* data)
+void PriorityQueue::pass(Index index, Key key, bool full_comp)
 {
-    Node candidate(index, key, data);
+    Node candidate(index, key);
     Index slot;
     Level level;
 
@@ -237,6 +217,6 @@ void PriorityQueue::printQueueRecursive(Index index, int indent, std::string lab
 
 void PriorityQueue::printQueueWOReorder() {
     std::cout << "Priority Queue Contents:" << std::endl;
-    std::cout << "Winner Root" << ": Index " << heap[0].index << ", Scaled Key " << heap[0].key << ", Unscaled Key " << heap[0].key  << std::endl;
+    std::cout << "Winner Root" << ": Index " << heap[0].index << ", Key " << heap[0].key << std::endl;
     printQueueRecursive(root() + 1, 4, "Loser Root");
 }

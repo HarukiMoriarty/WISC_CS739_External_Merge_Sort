@@ -5,13 +5,45 @@ Row::Row()
 	TRACE(false);
 
 	data.resize(ROW_LENGTH, 0);
-	offset.resize(2, 0);
+	ovc.resize(3, 0);
+	ovc[0] = 1;
+} // Row::Row
+
+Row::Row(bool fence, size_t offset)
+{
+	TRACE(false);
+
+	data.resize(ROW_LENGTH, 0);
+	ovc.resize(3, 0);
+	if (fence) ovc[0] = 0;
+	else ovc[0] = 2;
+	ovc[1] = offset;
 } // Row::Row
 
 Row::~Row()
 {
 	TRACE(false);
 } // Row::~Row
+
+bool Row::less(Row& other, size_t& offset) {
+	bool isLess = false;
+	while (--offset > 0)
+	{
+		if (data[ROW_LENGTH - offset] != other.data[ROW_LENGTH - offset])
+		{
+			isLess = data[ROW_LENGTH - offset] < other.data[ROW_LENGTH - offset];
+			break;
+		}
+	}
+	Row & loser = (isLess ? other : * this);
+
+	if (other.isFence() && isFence())
+	{
+		loser.ovc[1] = offset;
+		loser.ovc[2] = loser.data[offset];
+	}
+	return isLess;
+}
 
 void Row::initData(size_t range)
 {
@@ -27,55 +59,56 @@ size_t Row::getData(size_t index) const
 	return data[index];
 } // Row::getData
 
-void Row::setOffset(const Row& other)
+void Row::setData(std::vector<size_t> content)
+{
+	data = content;
+}
+
+size_t Row::getFence() const
+{
+	return ovc[0];
+} // Row::getFence 
+
+size_t Row::getOffset() const
+{
+	return ovc[1];
+} // Row::getOffset
+
+size_t Row::getValue() const
+{
+	return ovc[2];
+} // Row::getValue
+
+bool Row::isFence() const
+{
+	return ovc[0] != 1;
+} // Row:: isFence
+
+void Row::setOVC(size_t offset, size_t value)
+{
+	ovc[0] = 1;
+	ovc[1] = offset;
+	ovc[2] = value;
+} // Row::setOVC
+
+void Row::calOVC(const Row& base)
 {
 	TRACE(false);
 
 	for (size_t i = 0; i < ROW_LENGTH; ++i)
 	{
-		if (data[i] != other.data[i])
+		if (data[i] != base.data[i])
 		{
-			offset[0] = ROW_LENGTH - i;
-			offset[1] = data[i];
+			ovc[0] = ROW_LENGTH - i;
+			ovc[1] = data[i];
 			return;
 		}
 	}
 
 	// Need to set OVC to 0 if equal.
-	offset[0] = 0;
-	offset[1] = 0;
-} // Row::setOffset
-
-bool Row::operator>=(const Row& other) const
-{
-	// Compare the data arrays element by element.
-	for (size_t i = 0; i < ROW_LENGTH; ++i)
-	{
-		if (data[i] > other.data[i]) {
-			return true;
-		}
-		else if (data[i] < other.data[i]) {
-			return false;
-		}
-	}
-	return true;
-}
-// Row::operator>=
-
-void Row::printRow() const
-{
-	printf("Row data: ");
-	for (size_t i = 0; i < ROW_LENGTH; ++i)
-	{
-		printf("%zu ", data[i]);
-	}
-	printf(" Row offset: ");
-	for (size_t i = 0; i < 2; ++i)
-	{
-		printf("%zu ", offset[i]);
-	}
-	printf("\n");
-}
+	ovc[0] = 0;
+	ovc[1] = 0;
+} // Row::calOVC
 
 void Row::writeToDisk(std::ofstream& file) const
 {
@@ -85,10 +118,10 @@ void Row::writeToDisk(std::ofstream& file) const
 		file << data[i] << " ";
 	}
 
-	// Write offset array
-	for (size_t i = 0; i < offset.size(); i++)
+	// Write ovc array
+	for (size_t i = 0; i < ovc.size(); i++)
 	{
-		file << offset[i] << " ";
+		file << ovc[i] << " ";
 	}
 
 	// End with a newline to seperate rows
@@ -104,9 +137,9 @@ bool Row::readFromDisk(std::ifstream& file)
 		}
 	}
 
-	// Read offset array
-	for (size_t i = 0; i < offset.size(); i++) {
-		if (!(file >> offset[i])) {
+	// Read ovc array
+	for (size_t i = 0; i < ovc.size(); i++) {
+		if (!(file >> ovc[i])) {
 			return false;
 		}
 	}
