@@ -2,59 +2,12 @@
 
 #include <defs.h>
 #include <iostream>
+#include "Iterator.h"
 
-typedef unsigned int Index;
-typedef int Offset;
+typedef size_t Index;
+typedef size_t Offset;
 typedef char Level;
-
-const size_t fence_data[ROW_LENGTH] = {0};
-
-struct Key {
-    int offset;
-    int value;
-
-    // Constructor for easy initialization
-    Key(int o = 0, int v = 0) : offset(o), value(v) {}
-
-    // Print function to output in "offset@value" format
-    friend std::ostream& operator<<(std::ostream& os, const Key& data) {
-        if (data.offset == 0 && data.value == -1)
-        {
-            os << "early_fence(0)";
-        }
-        else if (data.offset >= 0 && data.offset < ROW_LENGTH) {
-            os << data.offset << "@" << data.value;
-        }
-        else if (data.offset < 0) {
-            os << "early_fence("  << data.offset * (-1) << ")";
-        }
-        else {
-            os << "late_fence(" << data.offset - ROW_LENGTH << ")";
-        }
-        return os;
-    }
-
-    // Overload the != operator
-    bool operator!=(const Key& other) const {
-        return offset != other.offset || value != other.value;
-    }
-
-    // Overload the == operator
-    bool operator==(const Key& other) const {
-        return offset == other.offset && value == other.value;
-    }
-
-    // Overload the < operator
-    bool operator<(const Key& other) const {
-        if (offset < other.offset) {
-            return true; // This object is less than other
-        }
-        if (offset > other.offset) {
-            return false; // This object is greater than other
-        }
-        return value < other.value; // Compare values if offsets are equal
-    }
-};
+typedef Row Key;
 
 class PriorityQueue {
 private:
@@ -65,11 +18,9 @@ private:
     struct Node {
         Index index;
         Key key;
-        const size_t* data;
 
         Node();
-
-        Node(Index idx, Key k, const size_t* data);
+        Node(Index idx, Key k);
 
         /**
          * @brief Swap values with another node
@@ -165,9 +116,8 @@ private:
      * @param index 
      * @param key 
      * @param full_comp
-     * @param data
      */
-    void pass(Index index, Key key, bool full_comp, const size_t* data);
+    void pass(Index index, Key key, bool full_comp);
 
     /**
      * @brief Key(early_fence) = index_value
@@ -218,12 +168,11 @@ public:
      * Need to implement when-to-add logic in the Sort iterator
      * 
      * @param index 
-     * @param offset
-     * @param  
+     * @param key
      */
-    void push(Index index, Key key, const size_t* data);
-    void insert(Index index, Key key, const size_t* data);
-    void update(Index index, Key key, const size_t* data);
+    void push(Index index, Key key);
+    void insert(Index index, Key key);
+    void update(Index index, Key key);
 
     /**
      * @brief Remove a node from the tree (using late_fence)
