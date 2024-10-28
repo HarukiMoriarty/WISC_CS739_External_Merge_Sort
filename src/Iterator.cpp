@@ -35,9 +35,9 @@ bool Row::less(Row& other, size_t& offset) {
 			break;
 		}
 	}
-	Row & loser = (isLess ? other : * this);
+	Row& loser = (isLess ? other : *this);
 
-	if (other.isFence() && isFence())
+	if (!other.isFence() && !isFence())
 	{
 		loser.ovc[1] = offset;
 		loser.ovc[2] = loser.data[offset];

@@ -115,22 +115,23 @@ bool PriorityQueue::empty()
     return hr.key == late_fence(hr.index);
 }
 
-Index PriorityQueue::poptop(bool invalidate)
+Index PriorityQueue::poptop(bool invalidate, Key& key)
 {
     if (empty()) return -1; // badIndex
+    key = heap[root()].key;
     if (invalidate)
         heap[root()].key = early_fence(heap[root()].index);
     return heap[root()].index;
 }
 
-Index PriorityQueue::top()
+Index PriorityQueue::top(Key& key)
 {
-    return poptop(false);
+    return poptop(false, key);
 }
 
-Index PriorityQueue::pop()
+Index PriorityQueue::pop(Key& key)
 {
-    return poptop(true);
+    return poptop(true, key);
 }
 
 void PriorityQueue::push(Index index, Key key)
@@ -153,7 +154,7 @@ void PriorityQueue::remove(Index index)
     pass(index, late_fence(index), false);
 }
 
-inline void setMax(Key & x, Key const y) {if(x < y) x = y;}
+inline void setMax(Key& x, Key const y) { if (x < y) x = y; }
 
 void PriorityQueue::pass(Index index, Key key, bool full_comp)
 {
@@ -177,12 +178,12 @@ void PriorityQueue::pass(Index index, Key key, bool full_comp)
             } while (!heap[slot].sibling(candidate, dest_level));
 
             if (heap[slot].less(candidate, full_comp)) break;
-            
+
             heap[dest] = heap[slot];
 
             // Now remember that dest is at the beginning location of slot
             // When we keep doing parent(dest), we are basically doing repair loop
-            while(parent(dest), dest != slot)
+            while (parent(dest), dest != slot)
                 setMax(heap[dest].key, heap[slot].key);
         } while (slot != root());
     heap[dest] = candidate;

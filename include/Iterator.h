@@ -1,6 +1,7 @@
 #pragma once
 
 #include "defs.h"
+#include "iostream"
 
 typedef uint64_t RowCount;
 
@@ -8,6 +9,10 @@ class Row
 {
 public:
 	Row();
+
+	/**
+	 * @brief Generate a fence key.
+	 */
 	Row(bool fence, size_t offset);
 	virtual ~Row();
 
@@ -34,13 +39,14 @@ public:
 	}
 
 	/**
-	 * @brief Overloading opeartor <, notice used for OVC comparasion
+	 * @brief Overloading opeartor <, notice used for OVC comparasion in external sort.
 	 */
 	bool operator<(const Row& other) const {
 		for (size_t i = 0; i < ovc.size(); i++) {
 			if (ovc[i] < other.ovc[i]) {
 				return true;
-			} else if (ovc[i] > other.ovc[i]) {
+			}
+			else if (ovc[i] > other.ovc[i]) {
 				return false;
 			}
 		}
@@ -48,7 +54,7 @@ public:
 	}
 
 	/**
-	 * @brief Overloading operator >=, notice used for full data comparasion.
+	 * @brief Overloading operator >=, notice used for full data comparasion in Witness.
 	 */
 	bool operator>=(const Row& other) const {
 		// Compare the data arrays element by element.
@@ -65,7 +71,7 @@ public:
 	}
 
 	/**
-	 * @brief Comparasion used for data comparasion given the same offset
+	 * @brief Data comparasion given the same OVC.
 	 * @param other
 	 * @param offset
 	 */
@@ -85,7 +91,7 @@ public:
 	size_t getData(size_t index) const;
 
 	/**
-	 * @brief Sets data by a given vector, notice this function should only be used in test
+	 * @brief Sets data by a given vector, notice this function should only be used in test.
 	 * @param content
 	 */
 	void setData(std::vector<size_t> content);
