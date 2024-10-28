@@ -45,5 +45,6 @@ bool ScanIterator::next(Row& row)
 
 void ScanIterator::free(Row& row)
 {
+	// Since we are passing reference, we do not need to free anything here
 	TRACE(false);
 } // ScanIterator::free

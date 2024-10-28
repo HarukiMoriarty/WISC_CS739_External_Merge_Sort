@@ -11,8 +11,11 @@ BASE_PATH = Path(__file__).absolute().parent
 OUTPUT_FILE = "witness.output"  # File where C++ writes the sort output
 
 LOG = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format="%(message)s")
-
+logging.basicConfig(
+    level=logging.INFO, 
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 class ExperimentParameters(TypedDict):
     row_num: List[int]
@@ -80,8 +83,8 @@ def check_sort_output():
             input_order = lines[0].strip().split()[-2]  # input True/False order
             output_order = lines[2].strip().split()[-2]  # output True/False order
 
-            parity_before = lines[1].strip().split(":")[1].strip().split()  # input Parity values
-            parity_after = lines[3].strip().split(":")[1].strip().split()   # output Parity values
+            parity_before = lines[1].strip().split(":")[1].strip().split()[0]  # input Parity values
+            parity_after = lines[3].strip().split(":")[1].strip().split()[0]   # output Parity values
 
             # Check if the input and output parity match
             if parity_before != parity_after:

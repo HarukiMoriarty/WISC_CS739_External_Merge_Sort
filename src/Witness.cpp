@@ -20,10 +20,9 @@ Iterator* WitnessPlan::init() const
 
 WitnessIterator::WitnessIterator(WitnessPlan const* const plan) :
 	_plan(plan), _input(plan->_input->init()),
-	_rows(0), in_order(true)
+	_rows(0), _parity(0), in_order(true)
 {
 	TRACE(false);
-	_parity.resize(ROW_LENGTH, 0);
 } // WitnessIterator::WitnessIterator
 
 WitnessIterator::~WitnessIterator()
@@ -57,7 +56,7 @@ void WitnessIterator::calculateParity(Row& row)
 {
 	for (size_t i = 0; i < ROW_LENGTH; i++)
 	{
-		_parity[i] ^= row.getData(i);
+		_parity ^= (row.getData(i) << i);
 	}
 } // WitnessIterator::calParity
 
@@ -66,11 +65,7 @@ void WitnessIterator::writeObservation()
 	std::ofstream outfile("witness.output", std::ios_base::app);
 	if (outfile.is_open()) {
 		outfile << _plan->_name << " witnessed " << (in_order ? "true" : "false") << " order\n";
-		outfile << "Parity " << _plan->_name << " sort: ";
-		for (size_t i = 0; i < _parity.size(); i++) {
-			outfile << _parity[i] << " ";
-		}
-		outfile << "\n";
+		outfile << "Parity " << _plan->_name << " sort: " << _parity << "\n";
 	}
 	else {
 		printf("Cannot open witness output file\n");

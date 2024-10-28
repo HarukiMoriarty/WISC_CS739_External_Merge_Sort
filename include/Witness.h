@@ -40,7 +40,7 @@ private:
 	Iterator* const _input;
 	RowCount _rows;
 
-	std::vector<size_t> _parity; 	// Array to store the calculated parity values.
-	bool in_order;					// Flag indicating if rows are being sorted.	
-	Row last_row;					// Stores the last row to verify the order.
+	size_t _parity; 	// Parity values.
+	bool in_order;		// Flag indicating if rows are being sorted.	
+	Row last_row;		// Stores the last row to verify the order.
 }; // class WitnessIterator
