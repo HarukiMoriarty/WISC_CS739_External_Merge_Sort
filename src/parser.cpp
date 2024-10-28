@@ -10,6 +10,12 @@ bool ArgumentParser::parse(int argc, char* argv[]) {
                 return false;
             }
         }
+        else if (arg.find("--value_range=") == 0) {
+            if (!parseNamedArgument(arg, "--value_range=", value_range)) {
+                printf("Error: value_range must be a valid number.\n");
+                return false;
+            }
+        }
         else if (arg.find("--predicates=") == 0) {
             if (!parsePredicates(arg.substr(13))) {
                 return false;

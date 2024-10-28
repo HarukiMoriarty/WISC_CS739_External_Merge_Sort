@@ -16,6 +16,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 class ExperimentParameters(TypedDict):
     row_num: List[int]
+    value_range: List[int]
     predicates: List[str]
 
 
@@ -41,8 +42,9 @@ def run_experiment(params: ExperimentParameters):
         f.truncate(0)
 
     cmd_base = [
-        "./build/Test.exe",
+        "./build/Main.exe",
         f"--row_number={params['row_num']}",
+        f"--value_range={params['value_range']}",
     ]
 
     if "predicates" in params and params["predicates"]:

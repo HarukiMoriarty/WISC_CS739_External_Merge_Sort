@@ -148,6 +148,5 @@ struct Predicate {
 
 // Following are experiment config
 #define ROW_LENGTH 10
-#define VALUE_RANGE 1000
 #define CACHE_CAPACITY 10
 #define MEMORY_CAPACIY 1000 // For now we treat this same as fan-in

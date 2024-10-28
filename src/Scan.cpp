@@ -1,7 +1,7 @@
 #include "Scan.h"
 
-ScanPlan::ScanPlan(char const* const name, RowCount const count)
-	: Plan(name), _count(count)
+ScanPlan::ScanPlan(char const* const name, RowCount const count, size_t value_range)
+	: Plan(name), _count(count), _value_range(value_range)
 {
 	TRACE(false);
 } // ScanPlan::ScanPlan
@@ -37,7 +37,7 @@ bool ScanIterator::next(Row& row)
 
 	if (_count >= _plan->_count) return false;
 
-	row.initData(VALUE_RANGE);					// Initialize row data.
+	row.initData(_plan->_value_range); // Initialize row data.
 	// row.printRow();
 	++_count;
 	return true;

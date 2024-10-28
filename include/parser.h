@@ -7,6 +7,7 @@
 class ArgumentParser {
 public:
     size_t row_number = 100;
+    size_t value_range = 1000;
     std::vector<Predicate> predicates;
 
     bool parse(int argc, char* argv[]);
