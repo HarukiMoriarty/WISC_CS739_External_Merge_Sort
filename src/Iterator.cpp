@@ -25,7 +25,6 @@ Row::~Row()
 } // Row::~Row
 
 bool Row::less(Row& other, size_t& offset) {
-	std::cout << *this << " " << other << "offset" << offset << std::endl;
 	bool isLess = false;
 	while (--offset > 0)
 	{
@@ -35,7 +34,6 @@ bool Row::less(Row& other, size_t& offset) {
 			break;
 		}
 	}
-	std::cout << "offset " << offset << std::endl;
 	Row& loser = (isLess ? other : *this);
 
 	if (!other.isFence() && !isFence())
@@ -44,7 +42,6 @@ bool Row::less(Row& other, size_t& offset) {
 		if (offset == 0) loser.ovc[2] = 0;
 		else loser.ovc[2] = loser.data[ROW_LENGTH - offset];
 	}
-	std::cout << "offset " << offset << std::endl;
 	return isLess;
 }
 

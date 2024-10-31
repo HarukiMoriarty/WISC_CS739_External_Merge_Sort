@@ -147,6 +147,9 @@ struct Predicate {
 };
 
 // Following are experiment config
-#define ROW_LENGTH 10
-#define CACHE_CAPACITY 10
-#define MEMORY_CAPACIY 1000 // For now we treat this same as fan-in
+/// Row Length: normally, the length of a record is fixed
+#define ROW_LENGTH 10 		
+/// Cache Capacity: for simplification, we assume cache capacity is power of 2 of rows
+#define CACHE_CAPACITY 16 	
+/// Memory Capacity: for simplification, we suppose memory capacity is integer multiple of cache capacity
+#define MEMORY_CAPACIY 1024  
