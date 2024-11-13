@@ -36,7 +36,7 @@ private:
          * @return true
          * @return false
          */
-        bool less(Node& other, bool const full);
+        bool less(Node& other);
 
         /**
          * @brief Check if two nodes are siblings by comparing parent's index (bit shifting)
@@ -115,9 +115,8 @@ private:
      *
      * @param index
      * @param key
-     * @param full_comp
      */
-    void pass(Index index, Key key, bool full_comp);
+    void pass(Index index, Key key);
 
     /**
      * @brief Key(early_fence) = index_value
@@ -174,6 +173,11 @@ public:
     void push(Index index, Key key);
     void insert(Index index, Key key);
     void update(Index index, Key key);
+
+    /**
+     * @brief Clear queue
+     */
+    void clear();
 
     /**
      * @brief Remove a node from the tree (using late_fence)

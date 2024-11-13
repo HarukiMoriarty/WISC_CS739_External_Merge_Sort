@@ -10,13 +10,12 @@ void PriorityQueue::Node::swap(Node& other)
     std::swap(key, other.key);
 }
 
-bool PriorityQueue::Node::less(Node& other, bool const full)
+bool PriorityQueue::Node::less(Node& other)
 {
     // This offset value is just used to track what offset matters in a full comparision in case of same OVCs
     // e.g. If 2 OVCs are both starting with offset 4, we ignore the first 4 offsets in full_comp (we discussed this)
     Offset offset;
-    if (full) offset = Offset(-1);
-    else if (key != other.key) return (key < other.key);
+    if (key != other.key) return (key < other.key);
     else offset = key.getOffset();
 
     // Full comparision if OVC is same
@@ -110,7 +109,7 @@ bool PriorityQueue::empty()
     Node const& hr = heap[root()];
     while (hr.key == early_fence(hr.index))
     {
-        pass(hr.index, late_fence(hr.index), false);
+        pass(hr.index, late_fence(hr.index));
     }
     return hr.key == late_fence(hr.index);
 }
@@ -136,7 +135,7 @@ Index PriorityQueue::pop(Key& key)
 
 void PriorityQueue::push(Index index, Key key)
 {
-    pass(index, key, false);
+    pass(index, key);
 }
 
 void PriorityQueue::insert(Index index, Key key)
@@ -151,20 +150,20 @@ void PriorityQueue::update(Index index, Key key)
 
 void PriorityQueue::remove(Index index)
 {
-    pass(index, late_fence(index), false);
+    pass(index, late_fence(index));
 }
 
 inline void setMax(Key& x, Key const y) { if (x < y) x = y; }
 
-void PriorityQueue::pass(Index index, Key key, bool full_comp)
+void PriorityQueue::pass(Index index, Key key)
 {
     Node candidate(index, key);
     Index slot;
     Level level;
 
     for (leaf(index, slot, level); parent(slot, level), slot != root() && heap[slot].index != index; )
-        if (heap[slot].less(candidate, full_comp))
-            heap[slot].swap(candidate), full_comp = false;
+        if (heap[slot].less(candidate))
+            heap[slot].swap(candidate);
 
     Index dest = slot;
     if (slot != root() && candidate.index == index &&
@@ -177,7 +176,7 @@ void PriorityQueue::pass(Index index, Key key, bool full_comp)
                 parent(slot, level);
             } while (!heap[slot].sibling(candidate, dest_level));
 
-            if (heap[slot].less(candidate, full_comp)) break;
+            if (heap[slot].less(candidate)) break;
 
             heap[dest] = heap[slot];
 
@@ -187,6 +186,13 @@ void PriorityQueue::pass(Index index, Key key, bool full_comp)
                 setMax(heap[dest].key, heap[slot].key);
         } while (slot != root());
     heap[dest] = candidate;
+}
+
+void PriorityQueue::clear() {
+    for (Index i = 0; i < capacity(); i++) {
+        pass(i, early_fence(i));
+    }
+    return;
 }
 
 void PriorityQueue::printQueue() {

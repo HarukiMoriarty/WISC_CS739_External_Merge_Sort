@@ -149,7 +149,10 @@ struct Predicate {
 // Following are experiment config
 /// Row Length: normally, the length of a record is fixed
 #define ROW_LENGTH 10 		
-/// Cache Capacity: for simplification, we assume cache capacity is power of 2 of rows
-#define CACHE_CAPACITY 16 	
-/// Memory Capacity: for simplification, we suppose memory capacity is integer multiple of cache capacity
-#define MEMORY_CAPACIY 1024  
+/// Cache Capacity, we actually compute CACHE_FAN_IN from CACHE_CAPACITY
+#define CACHE_CAPACITY 16	
+/// Memory Capacity: for simplification, we assume memory capacity is integer times of cache capacity.
+#define MEMORY_CAPACITY 1024
+/// Memory Fan In: Maximum fan in for memory-disk priority queue, for simplification, we assume it is power of 2.
+/// Question: How to build relation with MEMORY_CAPACITY and MEMORY_FAN_IN?
+#define MEMORY_FAN_IN 32  

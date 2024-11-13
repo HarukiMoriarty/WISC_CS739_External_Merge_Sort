@@ -34,20 +34,37 @@ private:
 
 	size_t _runIndex;
 
-	// Cache Memory Level External Sort
-	PriorityQueue _cache_priority_queue;
-	std::vector<std::queue<Row> > _memory;
 	/// Tricky:
 	/// 1. Normally we will have one page of output buffer, but for simplify, we hold a
-	/// big array here and flush this array when the whole exteral sort for current memory run is done.
+	/// big array here and flush this array when the whole sort for current run is done.
 	std::vector<Row> _output_buffer;
+
+	/// Cache Memory Level External Sort
+	PriorityQueue _in_cache_priority_queue;	// Used for generate sorted cache run in memory
+	std::vector<std::queue<Row> > _memory;	// Used to store cache run
+
+	// Memory Disk Level External Sort
+	PriorityQueue _memory_disk_priority_queue;
+	std::vector<size_t> _graceful_degradation_vector;
+	std::vector<std::ifstream> _fan_in_file_handlers;
+	size_t sort_level;
 
 	std::ifstream _output;
 
 	/**
-	 * @brief Sort the data currently presented in cache (quick-sort)
+	 * @brief External Sort the data currently presented in cache
 	 */
 	void externalSortCacheMemory(size_t cache_run_cnt);
+
+	/**
+	 *
+	 */
+	void externalSortMemoryDisk();
+
+	/**
+	 *
+	 */
+	void compute_graceful_degradation(size_t memory_run);
 
 	/**
 	 * @brief Flush all data from memory to disk
