@@ -37,7 +37,7 @@ void testPushAndPop()
     key3.setOVC(2, 10);
     key3.setData(data_3);
 
-    key_output_1.setOVC(1, 1);
+    key_output_1.setOVC(1, 9);
     key_output_1.setData(data_1);
     key_output_2.setOVC(2, 5);
     key_output_2.setData(data_2);
@@ -60,6 +60,7 @@ void testPushAndPop()
     assert(pq.top(output) == 1);
     // pq.printQueue();
     assert(pq.pop(output) == 1);
+    std::cout << output << " " << key_output_1 << std::endl;
     assert(output == key_output_1);
 
     // std::cout << "testPushAndPop(): Top element after second pop: " << pq.top() << std::endl;

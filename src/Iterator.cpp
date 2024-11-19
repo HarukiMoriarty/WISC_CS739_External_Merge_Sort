@@ -6,7 +6,6 @@ Row::Row()
 
 	data.resize(ROW_LENGTH, 0);
 	ovc.resize(3, 0);
-	ovc[0] = 1;
 } // Row::Row
 
 Row::Row(bool fence, size_t offset)
@@ -40,7 +39,8 @@ bool Row::less(Row& other, size_t& offset) {
 	if (!other.isFence() && !isFence())
 	{
 		loser.ovc[1] = offset;
-		loser.ovc[2] = loser.data[offset];
+		if (offset == 0) loser.ovc[2] = 0;
+		else loser.ovc[2] = loser.data[ROW_LENGTH - offset];
 	}
 	return isLess;
 }
@@ -51,6 +51,10 @@ void Row::initData(size_t range)
 	for (size_t i = 0; i < data.size(); i++) {
 		data[i] = Random(range);
 	}
+
+	ovc[0] = 1;
+	ovc[1] = ROW_LENGTH;
+	ovc[2] = data[0];
 } // Row::setData
 
 size_t Row::getData(size_t index) const

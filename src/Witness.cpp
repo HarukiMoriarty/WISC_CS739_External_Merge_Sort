@@ -83,4 +83,5 @@ void WitnessIterator::checkOrder(Row& row)
 		}
 		in_order = false;
 	}
+	return;
 } // WitnessIterator::checkOrder
