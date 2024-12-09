@@ -4,10 +4,6 @@
 #include "Iterator.h"
 #include "PriorityQueue.h"
 
-// Helper function
-int partition(std::vector<Row*>& rows, int low, int high);
-void quickSort(std::vector<Row*>& rows, int low, int high);
-
 class SortPlan : public Plan
 {
 	friend class SortIterator;
@@ -48,6 +44,7 @@ private:
 	std::vector<size_t> _graceful_degradation_vector;
 	std::vector<std::ifstream> _fan_in_file_handlers;
 	size_t sort_level;
+	size_t _flush_count;
 
 	std::ifstream _output;
 

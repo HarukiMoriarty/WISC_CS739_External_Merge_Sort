@@ -1,32 +1,5 @@
 #include "Sort.h"
 
-// Internal Sort Helper function
-//===================================================================
-int partition(std::vector<Row*>& rows, int low, int high)
-{
-	Row* pivot = rows[high];
-	int i = low - 1;
-
-	for (int j = low; j < high; ++j) {
-		if (*pivot >= *rows[j]) {
-			++i;
-			std::swap(rows[i], rows[j]);
-		}
-	}
-	std::swap(rows[i + 1], rows[high]);
-	return i + 1;
-}
-
-void quickSort(std::vector<Row*>& rows, int low, int high)
-{
-	if (low < high) {
-		int pi = partition(rows, low, high);
-		quickSort(rows, low, pi - 1);
-		quickSort(rows, pi + 1, high);
-	}
-}
-//=====================================================================
-
 SortPlan::SortPlan(char const* const name, Plan* const input)
 	: Plan(name), _input(input)
 {
@@ -53,7 +26,8 @@ SortIterator::SortIterator(SortPlan const* const plan) :
 	_runIndex(0),
 	_in_cache_priority_queue(PriorityQueue(static_cast<size_t>(ceil(log2(CACHE_CAPACITY))))),
 	_memory_disk_priority_queue(PriorityQueue(static_cast<size_t>(ceil(log2(MEMORY_FAN_IN))))),
-	sort_level(0)
+	sort_level(0),
+	_flush_count(0)
 {
 	TRACE(false);
 	/// Tricky: 
@@ -128,6 +102,7 @@ SortIterator::~SortIterator()
 	_output.close();
 
 	traceprintf("%s produced %lu of %lu rows\n", _plan->_name, (unsigned long)(_produced), (unsigned long)(_consumed));
+	traceprintf("total writes to disk: %lu\n", (unsigned long)_flush_count); // print flush count
 } // SortIterator::~SortIterator
 
 bool SortIterator::next(Row& row)
@@ -155,6 +130,7 @@ void SortIterator::flushMemory()
 		file.close();
 		_output_buffer.clear();
 		_runIndex++;
+		_flush_count++;
 	}
 	else {
 		printf("Error: Unable to open file run_%ld\n", _runIndex);
@@ -265,4 +241,3 @@ void SortIterator::compute_graceful_degradation(size_t memory_run) {
 
 	return;
 }
-
