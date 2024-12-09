@@ -89,19 +89,24 @@ Our implementation is as follow: Say we start with `W` runs, `F` fan-ins. Then w
 - Merge Planning
 
 #### 4. Cache Runs
-- We use internal sort for cache runs, then the result is stored in memory.
+- We use internal sort for cache runs; the result is stored in memory.
+- We use ceiling `(log2 (CACHE_CAPACITY))` as the priority queue size. We get output each time we push the `CACHE_CAPACITY` of rows. We store these cache runs.
 
 #### 5. Memory Runs
 - If the runs from cache fills memory, then we do external merge sort (merge the cache runs currently stored in memomry) then flush them to disk.
+- We use ceiling `(log2 (cache_run_cnt))` as the priority size. To simplify, we ignore `CACHE_CAPACITY` here and always assume the cache-to-memory priority queue can fit in the cache; thus, we do NOT apply multi-level external sort at this part. 
+- For memory output buffer, Normally, we should have one page (or several) as an output buffer and flush the content back to disk periodically. To simplify, we hold an enormous array in our code and flush this array when the whole sort for a memory run is done.
 
 #### 6. Recycling the Priority Queue
 - Priority Queue is recycled in our code, we have one for cache→memory and one for memory→disk.
 
 #### 7. Minimum number of row comparisions
 - We used Tree of Loser Priority Queue with OVC, and this helps minimize full row comparision.
+- We simply follow the code of [Priority queues for database query processing](https://dl.gi.de/server/api/core/bitstreams/bc0306c3-214e-4802-ad39-a0ff79cbded0/content)
 
 #### 8. Minimum number of column comparisions
 - In case of similar OVC, we start comparing from the similar offset.
+- We simply follow the code of [Priority queues for database query processing](https://dl.gi.de/server/api/core/bitstreams/bc0306c3-214e-4802-ad39-a0ff79cbded0/content)
 
 #### 9. Test Cases for Correctness
 - Mentioned above.
