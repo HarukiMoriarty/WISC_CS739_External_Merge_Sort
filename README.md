@@ -88,7 +88,8 @@ We reflected the stuffs we have implemented with the given rubriks:
 - We have Unit Tests for this in `./test/PriorityQueueTest.h`.
 
 #### 3. Graceful Degradation
-Our implementation is as follow: Say we start with `W` runs, `F` fan-ins. Then we calculate the initial merge `(W-2) % (F-1) + 2`, then merge with fan-in `F` for the rest of runs. After 1st merge step, say we obtain `W_1` new runs, then we redo the same calculation and continue merging until we merge everything.
+Our implementation is as follow: Say we start with `W` runs, `F` fan-ins.
+Then we calculate the initial merge `R = (W-2) % (F-1) + 2`, and merge the first `R` runs, pushing that merged result to the end of run queue (so that we merge the bigger runs later). Then we iteratively repeat this calculation for `W-R+1` remaining runs and so on. This covers the following:
 - Internal → External
 - 1-step merge → n-step merge
 - Merge Planning
