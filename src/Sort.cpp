@@ -26,7 +26,6 @@ SortIterator::SortIterator(SortPlan const* const plan) :
 	_runIndex(0),
 	_in_cache_priority_queue(PriorityQueue(static_cast<size_t>(ceil(log2(CACHE_CAPACITY))))),
 	_memory_disk_priority_queue(PriorityQueue(static_cast<size_t>(ceil(log2(MEMORY_FAN_IN))))),
-	sort_level(0),
 	_flush_count(0)
 {
 	TRACE(false);
@@ -92,7 +91,8 @@ SortIterator::SortIterator(SortPlan const* const plan) :
 	// Notice now we do not do external sort, so we just copy run_0 here for debugging.
 	externalSortMemoryDisk();
 
-	_output.open("disk/run_" + std::to_string(sort_level) + "_0");
+	traceprintf("Output: disk/run_%d", _runIndex);
+	_output.open("disk/run_" + std::to_string(_runIndex-1));
 	traceprintf("%s consumed %lu rows\n", _plan->_name, (unsigned long)(_consumed));
 } // SortIterator::SortIterator
 
@@ -102,7 +102,7 @@ SortIterator::~SortIterator()
 	_output.close();
 
 	traceprintf("%s produced %lu of %lu rows\n", _plan->_name, (unsigned long)(_produced), (unsigned long)(_consumed));
-	traceprintf("total writes to disk: %lu\n", (unsigned long)_flush_count); // print flush count
+	traceprintf("total writes to disk (in rows unit): %lu\n", (unsigned long)_flush_count);
 } // SortIterator::~SortIterator
 
 bool SortIterator::next(Row& row)
@@ -122,15 +122,16 @@ void SortIterator::free(Row& row)
 
 void SortIterator::flushMemory()
 {
-	std::ofstream file("disk/run_" + std::to_string(sort_level) + "_" + std::to_string(_runIndex));
+	std::ofstream file("disk/run_" + std::to_string(_runIndex));
 	if (file.is_open()) {
 		for (size_t i = 0; i < _output_buffer.size(); i++) {
 			_output_buffer[i].writeToDisk(file);
+			_flush_count++;
 		}
 		file.close();
 		_output_buffer.clear();
+		_run_queue.push_back("disk/run_" + std::to_string(_runIndex));
 		_runIndex++;
-		_flush_count++;
 	}
 	else {
 		printf("Error: Unable to open file run_%ld\n", _runIndex);
@@ -176,68 +177,56 @@ void SortIterator::externalSortCacheMemory(size_t cache_run_cnt)
 }
 
 void SortIterator::externalSortMemoryDisk() {
-	while (_runIndex > 1) {
-		compute_graceful_degradation(_runIndex);
-		sort_level++;
-		_runIndex = 0;
+	while (_run_queue.size() > 1) {
+		size_t current_fan_in = compute_graceful_degradation(_run_queue.size());
 
-		for (size_t i = 0; i < _graceful_degradation_vector.size(); i++) {
-			size_t current_fan_in = _graceful_degradation_vector[i];
-			size_t prefix_sum_fan_in = i == 0 ? 0 : _graceful_degradation_vector[0] + MEMORY_FAN_IN * (i - 1);
-			_fan_in_file_handlers.clear();
+        // Gather smallest runs and pop them from the run queue
+		// NOTE: We will push the merged run back to the run queue at the end of this loop
+        std::vector<std::string> chosen_runs;
+        for (size_t i = 0; i < current_fan_in; i++) {
+            chosen_runs.push_back(_run_queue.front());
+            _run_queue.pop_front();
+        }
 
-			Row input_row;
-			for (size_t run_index = 0; run_index < current_fan_in; run_index++) {
-				std::ifstream file;
-				file.open("disk/run_" + std::to_string(sort_level - 1) + "_" + std::to_string(run_index + prefix_sum_fan_in));
-				assert(file.is_open());
-				assert(input_row.readFromDisk(file));
-				_memory_disk_priority_queue.push(run_index, input_row);
-				_fan_in_file_handlers.push_back(std::move(file));
-			}
-
-			Row output_row;
-			int output_index = 0;
-			while (true) {
-				output_index = _memory_disk_priority_queue.pop(output_row);
-				if (output_index == -1) break;
-				_output_buffer.push_back(output_row);
-				if (input_row.readFromDisk(_fan_in_file_handlers[output_index])) {
-					_memory_disk_priority_queue.push(output_index, input_row);
-				}
-			}
-			_memory_disk_priority_queue.clear();
-			flushMemory();
+		// Merge these runs
+		// size_t prefix_sum_fan_in = i == 0 ? 0 : _graceful_degradation_vector[0] + MEMORY_FAN_IN * (i - 1);
+		_fan_in_file_handlers.clear();
+		Row input_row;
+		for (size_t run_index = 0; run_index < current_fan_in; run_index++) {
+			std::ifstream file;
+			file.open(chosen_runs[run_index]);
+			assert(file.is_open());
+			assert(input_row.readFromDisk(file));
+			_memory_disk_priority_queue.push(run_index, input_row);
+			_fan_in_file_handlers.push_back(std::move(file));
 		}
-	}
 
-	return;
+		Row output_row;
+		int output_index = 0;
+		while (true) {
+			output_index = _memory_disk_priority_queue.pop(output_row);
+			if (output_index == -1) break;
+			_output_buffer.push_back(output_row);
+			if (input_row.readFromDisk(_fan_in_file_handlers[output_index])) {
+				_memory_disk_priority_queue.push(output_index, input_row);
+			}
+		}
+		_memory_disk_priority_queue.clear();
+
+		// Cleanup intermediate runs
+		for (const std::string& fname : chosen_runs) {
+			if (remove(fname.c_str()) != 0) {
+				printf("Warning: Unable to delete file %s.\n", fname.c_str());
+			}
+		}
+
+		// Now this will write the merged run to disk, and also push the run to the run queue
+		flushMemory();
+	}
 }
 
-void SortIterator::compute_graceful_degradation(size_t memory_run) {
-	_graceful_degradation_vector.clear();
-	size_t validation = memory_run;
-
-	if (memory_run <= MEMORY_FAN_IN) {
-		_graceful_degradation_vector.push_back(memory_run);
-		return;
-	}
-
-	size_t fisrt_merge_fan_in = (memory_run - 2) % (MEMORY_FAN_IN - 1) + 2;
-	_graceful_degradation_vector.push_back(fisrt_merge_fan_in);
-	memory_run -= fisrt_merge_fan_in;
-	while (memory_run >= MEMORY_FAN_IN) {
-		_graceful_degradation_vector.push_back(MEMORY_FAN_IN);
-		memory_run -= MEMORY_FAN_IN;
-	}
-	_graceful_degradation_vector.push_back(memory_run);
-
-	// Validation
-	size_t total_run = 0;
-	for (size_t i = 0; i < _graceful_degradation_vector.size(); i++) {
-		total_run += _graceful_degradation_vector[i];
-	}
-	assert(total_run == validation);
-
-	return;
+size_t SortIterator::compute_graceful_degradation(size_t memory_run) {
+    if (memory_run <= 1) return memory_run;
+	else if (memory_run <= MEMORY_FAN_IN) return memory_run;
+    return (memory_run - 2) % (MEMORY_FAN_IN - 1) + 2;
 }

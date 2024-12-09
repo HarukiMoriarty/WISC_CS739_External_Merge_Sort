@@ -1,5 +1,6 @@
 #include <cmath>
 #include <queue>
+#include <deque>
 
 #include "Iterator.h"
 #include "PriorityQueue.h"
@@ -43,8 +44,8 @@ private:
 	PriorityQueue _memory_disk_priority_queue;
 	std::vector<size_t> _graceful_degradation_vector;
 	std::vector<std::ifstream> _fan_in_file_handlers;
-	size_t sort_level;
 	size_t _flush_count;
+	std::deque<std::string> _run_queue; // Stored runs in the order they are created
 
 	std::ifstream _output;
 
@@ -61,7 +62,7 @@ private:
 	/**
 	 *
 	 */
-	void compute_graceful_degradation(size_t memory_run);
+	size_t compute_graceful_degradation(size_t memory_run);
 
 	/**
 	 * @brief Flush all data from memory to disk
