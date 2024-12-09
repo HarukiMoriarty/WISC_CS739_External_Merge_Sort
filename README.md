@@ -24,9 +24,6 @@ make clean && make
 ```bash
 ./build/Main.exe
 ./build/Test.exe
-
-# Optional
-./tools/test.py
 ```
 
 ### `Main.exe` Usage
@@ -60,7 +57,15 @@ make clean && make
     - `./build/Main.exe --row_number=1000` cache to memory sort
     - `./build/Main.exe --row_number=10000` (or larger) memory to disk sort
 - A file `witness.output` should be created containing Witness Iterator's output (sort order check & parity check).
-
+- You can also using test script `tools/experiment.py`
+    - Write test settings in `experiment.yaml` under file folder `tools/experiment` or using the default `test.yaml`.
+    ```
+    row_num: [0, 1]                     -- A list of row_num paras
+    value_range: [100, 1000]            -- A list of value_range paras
+    predicates: ["1:100", "1:100,2:50"] -- Predicates para
+    ```
+    - Run test using command `$ python ./tools/experiment.py test`.
+    - Check the output's `parity` and `order` fields to see if they are correct.
 ### 2. Performance
 - Row Comparisions: In progress
 - Graceful Degradation: We make sure our optimization works as expected by checking the total amount of disk flushs. These are some example:
