@@ -177,6 +177,7 @@ void SortIterator::externalSortCacheMemory(size_t cache_run_cnt)
 }
 
 void SortIterator::externalSortMemoryDisk() {
+	// The run queue is already filled here thanks to memory flushes from the previous steps
 	while (_run_queue.size() > 1) {
 		size_t current_fan_in = compute_graceful_degradation(_run_queue.size());
 

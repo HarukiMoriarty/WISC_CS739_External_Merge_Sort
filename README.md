@@ -67,9 +67,14 @@ make clean && make
     - Run test using command `$ python ./tools/experiment.py test`.
     - Check the output's `parity` and `order` fields to see if they are correct.
 ### 2. Performance
-- Row Comparisions: In progress
-- Graceful Degradation: We make sure our optimization works as expected by checking the total amount of disk flushs. These are some example:
-    - `./build/Main.exe --row_number=66560` should print out ... (Printing out Disk flusks is a little tricky because our implementation is flushing the whole big run instead of memory sized runs I think, will fix this)
+- Row & Column Comparisions: We implemented and use Tree of Loser and OVC, and our sort operation functions correctly.  
+- Graceful Degradation: We make sure our optimization works as expected by checking the total amount of disk flushs. Here we chose how many rows in total was written to disk as the metric (because our fan-ins and memory size may vary). You can check this by looking at `Main.exe` output, there should be a line as follow: `src/Sort.cpp:105:~SortIterator total writes to disk (in rows unit): 1`. Below are some results we collected and reasonings, note that memory size is 1024 and memory fan-in is 32:
+    - `./build/Main.exe --row_number=1`: 1 row writes.
+    - `./build/Main.exe --row_number=1023`: 1023 rows writes.
+    - `./build/Main.exe --row_number=1025`(over memory size, under max fan-in): 2050 rows writes. 1025 of these writes are initial writes from memory to disk (unsorted). So we consider the remaining: `ceil((2025-1025)/1024)=2` times memory writes.
+    - `./build/Main.exe --row_number=32768`(W=F) (32 memory runs): 65536 row writes, `ceil((65536-32768)/1024)=32` times memory writes. This is correct.
+    - `./build/Main.exe --row_number=64512`(W=2F-1) (63 memory runs): 161792 row writes, `ceil((161792-64512)/1024)=95` times memory writes. This is correct! `95 = 32 + (31+32)`.
+
 
 ## Rubriks Reflection
 We reflected the stuffs we have implemented with the given rubriks:
