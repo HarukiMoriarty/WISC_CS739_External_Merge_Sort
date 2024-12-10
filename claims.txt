@@ -1,0 +1,16 @@
+Student IDs: 9085277441, 9087231834
+
+Internal Sort (5 of 5 points)
+External Sort (5 of 5 points)
+Graceful Degradation - internal to external sort (3 of 3 points)
+Graceful Degradation - 1 step to n step merge (3 of 3 points)
+Merge planning / optimization (3 of 3 points)
+CPU cache sized runs (3 of 3 points)
+Recycling the Priority Queue (2 of 2 points)
+Minimum # of row comparisons (5 of 5 points)
+Minimum # of column value comparisons (5 of 5 points)
+Good test cases + correct (4 of 4 points)
+Test case performance (1 of 2 points)
+Scan (1 of 1 point)
+Witness - count, parity, inversions (3 of 3 points)
+Filter (1 of 1 point)

@@ -1,8 +1,6 @@
 
 # CS764 Final Project: External Merge Sort
 
-**Authors:** Zhenghong Yu, Minh Phan
-
 ## Overview
 We implemented external sort, simulating a real machine's environment with cache, memory and disk. These are our configurations, also in `./include/defs.h`:
 

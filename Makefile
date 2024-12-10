@@ -10,10 +10,11 @@ CPPFLAGS = $(CPPOPT) -Wall -ansi -pedantic -std=c++11 -Iinclude
 # Build directory
 BUILD_DIR = build
 
-# Directories for includes and source files
+# Directories for includes, source files, and disk
 INCLUDE_DIR = include
 SRC_DIR = src
 TEST_DIR = test
+DISK_DIR = disk
 
 # Documents and scripts
 DOCS = Tasks.txt
@@ -38,23 +39,24 @@ TEST_OBJS = $(BUILD_DIR)/defs.o $(BUILD_DIR)/Assert.o $(BUILD_DIR)/Test.o \
             $(BUILD_DIR)/Iterator.o $(BUILD_DIR)/Scan.o $(BUILD_DIR)/Filter.o \
             $(BUILD_DIR)/Sort.o $(BUILD_DIR)/Witness.o $(BUILD_DIR)/parser.o \
 			$(BUILD_DIR)/PriorityQueue.o
-# RCS assists
-REV = -q -f
-MSG = no message
 
 # Default target: compile both Main.exe and Test.exe
-all: $(BUILD_DIR) Main.exe Test.exe
+all: $(BUILD_DIR) $(DISK_DIR) Main.exe Test.exe
 
 # Create build directory if it doesn't exist
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
+# Create disk directory if it doesn't exist
+$(DISK_DIR):
+	mkdir -p $(DISK_DIR)
+
 # Compilation of Main.exe
-Main.exe: $(MAIN_OBJS)
+Main.exe: $(DISK_DIR) $(MAIN_OBJS)
 	g++ $(CPPFLAGS) -o $(BUILD_DIR)/Main.exe $(MAIN_OBJS)
 
 # Compilation of Test.exe
-Test.exe: $(TEST_OBJS)
+Test.exe: $(DISK_DIR) $(TEST_OBJS)
 	g++ $(CPPFLAGS) -o $(BUILD_DIR)/Test.exe $(TEST_OBJS)
 
 # Tracing both Main.exe and Test.exe
@@ -122,3 +124,4 @@ co:
 # Clean target to remove generated files but keep the build directory
 clean:
 	@rm -f $(BUILD_DIR)/*
+	@rm -rf $(DISK_DIR)
